@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마음 은하계 (Mind Galaxy) - 10문항 정밀 측정 완성본</title>
+    <title>마음 은하계 (Mind Galaxy) - 30일 퀘스트 그랜드 통합 마스터본</title>
     <style>
         body {
             margin: 0; background-color: #0b0b16; color: #ffffff;
@@ -18,9 +18,9 @@
         }
         @keyframes bgMove { from { background-position: 0 0; } to { background-position: 550px 1100px; } }
 
-        .app-container { display: flex; width: 100%; max-width: 900px; gap: 15px; z-index: 10; padding: 10px; box-sizing: border-box; position: relative; }
+        .app-container { display: flex; width: 100%; max-width: 950px; gap: 15px; z-index: 10; padding: 10px; box-sizing: border-box; }
         
-        /* 👥 접기/펼치기가 적용된 친구 사이드바 */
+        /* 👥 접기/펼치기 친구 사이드바 */
         .sidebar {
             width: 240px; background: rgba(10, 10, 30, 0.85); backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px;
@@ -30,7 +30,6 @@
         .sidebar.active { display: flex; }
         .sidebar.collapsed { width: 65px; padding: 20px 5px; }
         .sidebar.collapsed .hide-on-collapse { display: none; }
-        
         .friend-list-box { flex: 1; overflow-y: auto; margin-top: 15px; }
         .friend-card {
             background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
@@ -64,13 +63,12 @@
         .btn-danger { background: #ff7675; }
         .btn-small { background: #00cec9; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
 
-        input {
+        input, select {
             width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.4);
             color: white; box-sizing: border-box; font-size: 0.9rem;
         }
         .remember-box { display: flex; align-items: center; justify-content: flex-start; margin: 6px 2px; font-size: 0.8rem; color: #b2bec3; }
-        .remember-box input { margin-right: 6px; width: 15px; height: 15px; }
         .flex-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
         .coin-bar { font-size: 1.1rem; color: #ffeaa7; font-weight: bold; margin: 8px 0; }
 
@@ -86,7 +84,7 @@
         }
         .option-btn:hover { background: rgba(0, 255, 204, 0.12); border-color: #00ffcc; }
 
-        /* 🪐 2D 파스텔 행성 및 보정 */
+        /* 🪐 2D 행성 비주얼 스테이지 */
         .stage-box { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; margin: 10px 0; position: relative; }
         .view-canvas { position: relative; width: 230px; height: 230px; margin: 0 auto; display: flex; justify-content: center; align-items: center; overflow: visible; }
         
@@ -95,7 +93,7 @@
             box-shadow: inset -12px -12px 25px rgba(0,0,0,0.65); transition: 0.4s ease; z-index: 5;
         }
 
-        /* 🎨 행성 표면 무늬 패턴 */
+        /* 패턴 정의 */
         .pattern-crater::before, .pattern-crater::after { content: ''; position: absolute; background: rgba(0,0,0,0.08); border-radius: 50%; box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2); }
         .pattern-crater::before { width: 22px; height: 16px; top: 20px; left: 15px; }
         .pattern-crater::after { width: 28px; height: 20px; bottom: 25px; right: 20px; }
@@ -114,7 +112,6 @@
         }
         .pattern-none { }
 
-        /* 편안함을 주는 부드러운 파스텔 테마 배색 */
         .pastel-gray { background: #d2dae2; }
         .pastel-green { background: #a8e6cf; box-shadow: inset -12px -12px 25px rgba(0,0,0,0.5), 0 0 20px rgba(168,230,207,0.3); } 
         .pastel-blue { background: #b5deff; box-shadow: inset -12px -12px 25px rgba(0,0,0,0.5), 0 0 20px rgba(181,222,255,0.3); }  
@@ -122,12 +119,11 @@
         .pastel-yellow { background: #fff59d; box-shadow: inset -12px -12px 25px rgba(0,0,0,0.5), 0 0 20px rgba(255,245,157,0.3); }
         .pastel-black { background: #57606f; box-shadow: inset -12px -12px 25px rgba(0,0,0,0.6), 0 0 20px rgba(87,96,111,0.3); }
 
-        /* 🛒 22종 대확장 데코 배치 고정 */
+        /* 🛒 22종 데코 아이템 슬롯 배치 */
         .decor { display: none; position: absolute; pointer-events: none; }
         .dec-ring { width: 185px; height: 42px; border: 4px solid rgba(255, 234, 167, 0.5); border-radius: 50%; transform: rotate(-12deg); z-index: 6; }
         .dec-moon { width: 16px; height: 16px; background: #f5f6fa; border-radius: 50%; box-shadow: 0 0 6px #fff; z-index: 8; animation: orbit2D 7s linear infinite; }
-
-        /* 지표 배치 오브젝트 안착 정밀 보정 */
+        
         .dec-alien { font-size: 20px; top: 25px; left: 45px; z-index: 10; }
         .dec-alien_blue { font-size: 20px; top: 75px; right: 40px; z-index: 10; }
         .dec-flower_red { font-size: 18px; bottom: 50px; left: 45px; z-index: 10; } 
@@ -158,7 +154,6 @@
         }
         @keyframes floatObj { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
-        /* 🌠 실시간 수신용 은하수 폭포 레이어 */
         .meteor-shower-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; overflow: hidden; border-radius: 20px; }
         .stream-star {
             position: absolute; width: 3px; height: 3px; border-radius: 50%; opacity: 0;
@@ -171,13 +166,50 @@
             100% { transform: translate(40px, 240px); opacity: 0; }
         }
 
-        /* 🗑️ 1일차 미니게임 */
-        .game-zone { width: 100%; height: 240px; background: rgba(0, 0, 0, 0.6); border: 2px dashed rgba(0, 255, 204, 0.3); border-radius: 16px; position: relative; margin: 15px 0; overflow: hidden; }
-        .trash { position: absolute; font-size: 24px; cursor: pointer; user-select: none; }
-        .success-banner { display: none; color: #00ffcc; font-size: 1.6rem; font-weight: bold; }
+        /* 🎮 🎮 [대형 전면 게임화 개편] 30일차 퀘스트 전용 인터랙티브 스테이지 엔진 컴포넌트 */
+        .quest-play-zone {
+            width: 100%; min-height: 280px; background: rgba(5, 5, 15, 0.7);
+            border: 2px dashed rgba(0, 255, 204, 0.4); border-radius: 20px;
+            position: relative; margin: 15px 0; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
 
-        #top-bar { position: absolute; top: 15px; left: 15px; right: 15px; z-index: 100; display: flex; justify-content: space-between; pointer-events: none; font-size: 0.85rem; }
-        .info-pill { background: rgba(10, 10, 25, 0.7); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 50px; pointer-events: auto; font-weight: bold; }
+        /* 1일차 전등 스위치 물리 슬라이더 */
+        .switch-track { width: 30px; height: 120px; background: #2f3542; border-radius: 15px; position: relative; border: 2px solid rgba(255,255,255,0.2); }
+        .switch-handle { width: 38px; height: 38px; background: radial-gradient(circle, #ff4757, #ff6b81); border-radius: 50%; position: absolute; left: -6px; top: 0; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .light-bulb { font-size: 45px; margin-bottom: 15px; filter: grayscale(1); transition: 0.3s; }
+        .light-on { filter: grayscale(0) drop-shadow(0 0 25px #ffd700) !important; }
+
+        /* 2일차 계량 절취선 물주기 컴포넌트 */
+        .water-cup-container { width: 100px; height: 140px; border: 4px solid #ffffff; border-top: none; border-radius: 0 0 15px 15px; position: relative; background: rgba(255,255,255,0.05); }
+        .water-level { width: 100%; height: 0%; background: linear-gradient(to top, #70a1ff, #1e90ff); position: absolute; bottom: 0; left: 0; transition: height 0.1s linear; }
+        .cup-line { width: 100%; border-top: 3px dashed #ff4757; position: absolute; bottom: 75%; left: 0; z-index: 10; }
+
+        /* 3일차 먼지 이펙터 */
+        .dust-cloud { position: absolute; font-size: 30px; cursor: pointer; user-select: none; transition: 0.2s; opacity: 0.8; }
+        
+        /* 4일차 태양 빔 광선 레이저 */
+        .sun-ray-line { width: 4px; height: 130px; background: linear-gradient(to bottom, #ffd700, rgba(255,255,255,0)); position: absolute; top: 60px; display: none; z-index: 10; box-shadow: 0 0 15px #ffd700; }
+
+        /* 5일차 우주선 이중개폐 셔터 */
+        .shutter-door { width: 50%; height: 100%; background: #57606f; border: 1px solid #2f3542; position: absolute; top: 0; z-index: 5; transition: transform 0.5s cubic-bezier(0.1, 0.8, 0.3, 1); }
+        .shutter-left { left: 0; } .shutter-right { right: 0; }
+
+        /* 7일차 돌멩이 드래그 입자 */
+        .drag-rock { padding: 8px 14px; border-radius: 50%; font-weight: bold; cursor: grab; font-size: 0.85rem; user-select: none; }
+        .glass-jar { width: 90px; height: 120px; border: 4px solid #00ffcc; border-radius: 15px; position: relative; display: flex; flex-direction: column-reverse; justify-content: flex-start; align-items: center; padding: 5px; gap: 4px; }
+
+        /* 8일차 회전 주파수 다이얼 */
+        .radio-dial { width: 100px; height: 100px; border-radius: 50%; background: #2f3542; border: 4px dashed #00ffcc; position: relative; cursor: grab; transition: transform 0.1s; }
+        .dial-pointer { width: 6px; height: 40px; background: #ff4757; position: absolute; top: 10px; left: 47px; border-radius: 3px; }
+
+        /* 9일차 별자리 스케치 패드 캔버스 */
+        .dot-star-node { position: absolute; width: 20px; height: 20px; background: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #000; font-size: 0.75rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 10px #fff; }
+
+        /* 20일차 네온 스케치 패드 */
+        .drawing-pad { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 10; cursor: crosshair; }
+
+        .quest-msg-box { font-size: 0.9rem; color: #55efc4; font-weight: bold; padding: 10px; border-radius: 10px; background: rgba(0,255,204,0.05); margin-top: 10px; min-height: 40px; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -191,24 +223,20 @@
 
     <div class="app-container">
         
-        <!-- 👥 [사이드바] 접이식 상호수락형 친구 관리소 -->
         <div id="app-sidebar" class="sidebar">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3 class="hide-on-collapse" style="font-size: 1rem; margin:0; color: #00ffcc;">🛰️ 위성 친구 목록</h3>
                 <button class="btn-small" style="padding:4px 8px;" onclick="toggleSidebarSize()">↔️</button>
             </div>
-            
             <div class="hide-on-collapse" style="margin-top:10px;">
                 <div style="display: flex; gap: 4px;">
                     <input type="text" id="side-friend-id" placeholder="친구 ID 추가" style="margin:0; padding:6px; font-size:0.8rem;">
                     <button class="btn-small" onclick="sendFriendRequest()">신청</button>
                 </div>
             </div>
-            
             <div class="friend-list-box" id="friend-list-render"></div>
         </div>
 
-        <!-- ================= [1] 홈 화면 ================= -->
         <div id="win-home" class="window active">
             <h1 class="title-glow" style="margin-top:20px;">나만의 행성 만들기</h1>
             <p class="subtitle">우주 배경의 은하계 기지입니다. 나만의 빛깔과 무늬를 지닌 행성을 찾고,<br>친구들과 상호 수락 기반 궤도를 연결해 보세요.</p>
@@ -218,7 +246,6 @@
             </div>
         </div>
 
-        <!-- ================= [2] 회원가입 (ID 중복 차단) ================= -->
         <div id="win-register" class="window">
             <h2>✨ 새 은하 계정 생성</h2>
             <form onsubmit="appRegister(event)">
@@ -230,7 +257,6 @@
             <button class="btn outline" style="margin-top: 10px; width: 100%;" onclick="openWindow('win-home')">돌아가기</button>
         </div>
 
-        <!-- ================= [3] 로그인 ================= -->
         <div id="win-login" class="window">
             <h2>🔐 관제실 데이터 동기화</h2>
             <form onsubmit="handleLogin(event)">
@@ -244,15 +270,14 @@
             <button class="btn outline" style="margin-top: 10px; width: 100%;" onclick="openWindow('win-home')">돌아가기</button>
         </div>
 
-        <!-- ================= [4] 메인 대시보드 화면 ================= -->
         <div id="win-dashboard" class="window">
             <h2 id="dash-title">- 관제사 기지</h2>
+            <h4 id="dash-planet-name" style="margin:-10px 0 10px 0; color:#00ffcc; font-size:0.9rem;">🪐 행성명: 미배정</h4>
             
             <div class="stage-box">
                 <div class="view-canvas">
                     <div id="my-ring" class="decor dec-ring"></div>
                     <div id="my-moon" class="decor dec-moon"></div>
-                    <!-- 22종 바인딩 레이어 마운트 -->
                     <div id="my-alien" class="decor my-item dec-alien">👽</div>
                     <div id="my-alien_blue" class="decor my-item dec-alien_blue">👾</div>
                     <div id="my-flower_red" class="decor my-item dec-flower_red">🌹</div>
@@ -296,7 +321,6 @@
                 <div id="inventory-container" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
             </div>
 
-            <!-- ✉️ 상호 신청 확인 수락 제어 패널 -->
             <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:12px; border-radius:15px; margin-top:10px; text-align:left;">
                 <h4 style="margin:0 0 6px 0; font-size:0.85rem; color:#00ffcc;">✉️ 나에게 온 위성 친구 신청목록</h4>
                 <div id="requests-container" style="font-size:0.8rem; color:#b2bec3;">받은 신청이 없습니다.</div>
@@ -305,7 +329,6 @@
             <button class="btn btn-danger" style="width:100%; margin-top:15px;" onclick="appLogout()">로그아웃</button>
         </div>
 
-        <!-- ================= [5] 📊 10문항 정밀 정서 측정 진단실 (나가기 긴급탈출 장착 및 완벽 패치) ================= -->
         <div id="win-test" class="window">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">
                 <h3 id="test-step" style="color:#00cec9; margin:0;">정서 검사 (1/10)</h3>
@@ -315,7 +338,6 @@
             <div id="test-options"></div>
         </div>
 
-        <!-- ================= [6] 무늬 커스텀 룸 ================= -->
         <div id="win-custom" class="window">
             <h2>🎨 행성 무늬 커스터마이징</h2>
             <div class="list-item"><div><strong>🕳️ 파스텔 크레이터 스킨</strong></div><button class="btn-small" onclick="changePlanetPattern('pattern-crater')">적용</button></div>
@@ -326,39 +348,37 @@
             <button class="btn outline" style="width:100%; margin-top:15px;" onclick="openWindow('win-dashboard')">복귀</button>
         </div>
 
-        <!-- ================= [7] 치유 퀘스트 목록 ================= -->
         <div id="win-quest" class="window">
-            <h2>📜 치유 퀘스트 목록 (30일 코스)</h2>
-            <div id="quest-container" style="max-height:45vh; overflow-y:auto;"></div>
+            <h2>📜 치유 퀘스트 목록 (30일 인터랙션 코스)</h2>
+            <div id="quest-container" style="max-height:55vh; overflow-y:auto;"></div>
             <button class="btn outline" style="width:100%; margin-top:15px;" onclick="openWindow('win-dashboard')">복귀</button>
         </div>
 
-        <!-- ================= [8] 1일차 쓰레기 청소 미니게임 ================= -->
-        <div id="win-game1" class="window">
-            <h2>🧹 1일차: 우주쓰레기 수거</h2>
-            <div id="trash-count" style="font-weight:bold; color:#00ffcc; margin-bottom:5px;">남은 파편: 5개</div>
-            <div class="game-zone" id="game-zone"></div>
-            <div class="success-banner" id="success-banner">🎉 수거 대성공! 별 10개 획득!</div>
-            <button class="btn outline" id="btn-game-exit" style="width:100%; margin-top:10px; display:none;" onclick="openWindow('win-dashboard')">기지 복귀</button>
+        <div id="win-game-engine" class="window">
+            <h2 id="engine-q-title">퀘스트 게임 가동 중</h2>
+            <p class="subtitle" id="engine-q-desc">시나리오 임무를 수행해 주세요.</p>
+            
+            <div class="quest-play-zone" id="engine-stage-core"></div>
+
+            <div class="quest-msg-box" id="engine-msg-feedback">미션 대기 중...</div>
+
+            <button class="btn" style="width:100%; margin-top:15px; display:none;" id="engine-claim-btn" onclick="saveQuestRewardAndExit()">⭐ 보상 획득 및 기지 복귀</button>
+            <button class="btn outline" style="width:100%; margin-top:5px;" id="engine-abort-btn" onclick="openWindow('win-quest')">미션 일시 포기</button>
         </div>
 
-        <!-- ================= [9] 🛒 대확장 22종 상점 ================= -->
         <div id="win-shop" class="window">
             <h2>🛒 마음 정화 데코 상점</h2>
             <div id="shop-container" style="max-height:50vh; overflow-y:auto;"></div>
             <button class="btn outline" style="width:100%; margin-top:15px;" onclick="openWindow('win-dashboard')">나가기</button>
         </div>
 
-        <!-- ================= [10] 👥 친구 행성 원격 관측 (실시간 은하수 폭포) ================= -->
         <div id="win-friend" class="window">
             <h2 id="friend-title">-의 행성 궤도</h2>
             <div class="stage-box">
-                <!-- 받은 유저 윈도우 내부에서 쏟아지는 실시간 은하수 샤워 -->
                 <div class="meteor-shower-container" id="milkyway-particle-zone"></div>
                 <div class="view-canvas">
                     <div id="friend-ring" class="decor dec-ring"></div>
                     <div id="friend-moon" class="decor dec-moon"></div>
-                    <!-- 친구 오버레이 슬롯 -->
                     <div id="friend-alien" class="decor friend-item dec-alien">👽</div>
                     <div id="friend-alien_blue" class="decor friend-item dec-alien_blue">👾</div>
                     <div id="friend-flower_red" class="decor friend-item dec-flower_red">🌹</div>
@@ -390,13 +410,11 @@
 
     </div>
 
-    <!-- ================= ⚙️ 자바스크립트 엔진 인터페이스 ================= -->
     <script>
-        // 네트워크 가상 인메모리 DB 세팅
         if (!localStorage.getItem('NET_GALAXY_SERVER_V7')) {
             const seed = {
-                'tester1': { pw: '1234', color: 'pastel-green', pattern: 'pattern-stripe', coins: 300, items: ['ring','alien'], equipped: ['ring','alien'], cleared: [], visitor: 12, friends: [], incomingRequests: [], sentRequests: [] },
-                'tester2': { pw: '1234', color: 'pastel-red', pattern: 'pattern-nebula', coins: 150, items: ['moon'], equipped: ['moon'], cleared: [], visitor: 40, friends: [], incomingRequests: [], sentRequests: [] }
+                'tester1': { pw: '1234', color: 'pastel-green', pattern: 'pattern-stripe', coins: 300, items: ['ring','alien'], equipped: ['ring','alien'], cleared: [], visitor: 12, friends: [], incomingRequests: [], sentRequests: [], planetName: '그린나래', nickname: '초록이' },
+                'tester2': { pw: '1234', color: 'pastel-red', pattern: 'pattern-nebula', coins: 150, items: ['moon'], equipped: ['moon'], cleared: [], visitor: 40, friends: [], incomingRequests: [], sentRequests: [], planetName: '코랄아일랜드', nickname: '붉은노을' }
             };
             localStorage.setItem('NET_GALAXY_SERVER_V7', JSON.stringify(seed));
         }
@@ -407,26 +425,53 @@
         let activeFriendData = null;
         let isSidebarCollapsed = false;
 
-        // --- 📊 정밀 정서 진단 문항 데이터 (전원 완벽 반영 완료) ---
-        const qaData = [
-            { q: "Q1. 깊은 수면 상태에서 깨어난 순간, 우주선의 인공지능이 \"가장 먼저 떠오르는 단어 하나를 가감 없이 말해달라\"고 요청합니다. 당신의 반응은? (자유연상 척도 적용)", opts: [{t:"① 깊게 고민하지 않고 뇌리를 스친 엉뚱하고 유쾌한 단어를 즉각 외친다.", s:"pastel-yellow"}, {t:"② \"잠깐만, 생각을 좀 정리하고...\"라며 논리적이고 세련된 단어를 고르려 검열한다.", s:"pastel-red"}, {t:"③ 귀찮은 듯 한참을 침묵하다가 그냥 현재 눈앞에 보이는 사물의 이름을 건조하게 뱉는다.", s:"pastel-black"}, {t:"④ 마음을 차분하게 가라앉히는 평화로운 자연이나 풍경에 관한 단어를 속삭인다.", s:"pastel-green"}, {t:"⑤ 내면에 맴돌던 조금은 쓸쓸하고 사색적인 감정의 단어를 조용히 읊조린다.", s:"pastel-blue"}] },
-            { q: "Q2. 항해 중 관제탑 창가에 있는 우주 식물의 '뿌리'가 오염되어 누렇게 뜬 잎사귀들이 발생했습니다. 이를 해결하기 위한 당신의 본능적인 접근 방식은? (뿌리치료 척도 적용)", opts: [{t:"① 당장 보기 싫은 누런 잎사귀들을 가위로 빠르게 잘라내고 눈앞의 공간을 청소한다.", s:"pastel-red"}, {t:"② 식물의 유전자 지도를 분석하고 데이터룸을 뒤져 오염의 근본적인 원인인 토양과 뿌리 세포부터 정밀 치료한다.", s:"pastel-blue"}, {t:"③ \"식물도 스트레스를 받았나 보네\"라며 기지 내부의 환기 및 환경 밸런스를 아늑하게 조정하는 데 주력한다.", s:"pastel-green"}, {t:"④ 다른 식물 화분들까지 전염되었을까 봐 조바심을 내며 온 기지의 생태계를 샅샅이 뒤엎어 검사한다.", s:"pastel-yellow"}, {t:"⑤ 어차피 수명이 다했거나 살리기 힘들다고 생각하여 화분을 시선이 닿지 않는 폐기실로 옮겨둔다.", s:"pastel-black"}] },
-            { q: "Q3. 우주 정거장 대피소에서 낯선 외계 생명체가 당신의 우주복 소매를 다급하게 붙잡고 무언가 알 수 없는 소리를 냅니다. 이때 당신의 즉각적인 대처는? (공감 및 투사 척도 적용)", opts: [{t:"① 상대의 눈빛과 몸짓에 온전히 몰입하며, 그가 처한 절박한 상황과 감정을 본능적으로 이해하려 노력한다.", s:"pastel-blue"}, {t:"② 위험한 생물일지 모른다는 경계심에 조바심을 느끼며 즉시 방어막 스위치를 켜고 거리를 둔다.", s:"pastel-yellow"}, {t:"③ 말이 통하지 않으니 소매를 강하게 뿌리치거나 관제소에 즉각적인 퇴거 조치 보안 무선을 보낸다.", s:"pastel-red"}, {t:"④ 상대의 행동을 위협이 아닌 일상적인 해프닝으로 받아들이고, 따뜻한 음료나 간식을 건네며 안심시킨다.", s:"pastel-green"}, {t:"⑤ 엮이기 싫은 마음에 아무런 반응도 감정도 보이지 않은 채 묵묵히 내 갈 길을 걸어간다.", s:"pastel-black"}] },
-            { q: "Q4. 행성 개척에 필요한 핵심 마이크로 칩을 조립하던 중, 사소한 핀 하나가 부러져 처음부터 다시 작업해야 하는 상황이 되었습니다. 당신의 행동은? (방어기제 및 초자아 충동 척도 적용)", opts: [{t:"① 스스로의 멍청한 실수에 강한 불만이 솟구쳐, 밤을 새워서라도 완벽한 정밀 칩을 새로 깎아낸다.", s:"pastel-red"}, {t:"② 전체 스케줄이 밀려 도태될까 봐 극심한 압박감을 느끼며, 다른 대체 부품이나 퀵 배송 시스템을 조급하게 뒤적인다.", s:"pastel-yellow"}, {t:"③ 조립실의 답답한 밀폐 공기 때문이라 생각하며 잠시 도구를 내려놓고 환기 장치 앞에서 숨을 고른다.", s:"pastel-green"}, {t:"④ 주파수 채널을 켜서 동료들에게 \"오늘 진짜 운이 없다\"며 위로받고 고독함을 채울 소통 상대를 찾는다.", s:"pastel-blue"}, {t:"⑤ 순간적으로 모든 의욕이 꺼져버려 조립대 전원을 차단하고 침대에 누워 멍하니 천장만 바라본다.", s:"pastel-black"}] },
-            { q: "Q5. 오랜 항해로 지친 당신에게 익명의 동료가 우주선 배송으로 '비밀 상자'를 보냈습니다. 상자를 열기 전 당신의 무의식적 기대는? (욕구 및 숨겨진 동기 해석 척도 적용)", opts: [{t:"① 나를 웃게 만들어 줄 신나고 명랑한 파티 용품이나 최신 게임 팩이 들어있기를 기대한다.", s:"pastel-yellow"}, {t:"② 미션을 초고속으로 클리어할 수 있는 강력한 고성능 엔진 부품이나 첨단 무기가 있기를 바란다.", s:"pastel-red"}, {t:"③ 방 안을 아늑하게 채워줄 향기로운 디퓨저나 마음을 편안하게 해주는 인테리어 소품을 기대한다.", s:"pastel-green"}, {t:"④ 밤의 정적 속에서 깊은 감성에 젖어들 수 있는 고전 음악 레코드나 아날로그 서적을 소망한다.", s:"pastel-blue"}, {t:"⑤ 아무런 기대도 품지 않으며, 어차피 별것 아닐 것이라 생각하고 건조하게 포장을 뜯는다.", s:"pastel-black"}] },
-            { q: "Q6. 우주선 메인 컴퓨터가 \"현재 당신의 항해 에너지 밸런스가 무너지고 있다\"며 위험 경고음을 울립니다. 이때 당신이 취하는 조치는? (저항 및 저지 단서 척도 적용)", opts: [{t:"① 도대체 에너지가 어디로 새는 거냐며 시스템 로그를 샅샅이 분석하고 예민하게 해결책을 강구한다.", s:"pastel-red"}, {t:"② 경고 알람이 주는 시끄러운 소음과 압박감이 피곤하여, 알람 주파수 볼륨을 낮추거나 화면을 꺼두고 상황을 방관한다.", s:"pastel-black"}, {t:"③ 궤도 이탈로 우주 미아가 될까 봐 덜컥 두려움이 앞서, 중앙 관제소의 가이드라인을 조급하게 반복 확인한다.", s:"pastel-yellow"}, {t:"④ 기지의 전반적인 산소 수치와 온도 시스템을 가장 스트레스가 적은 최적의 휴식 모드로 강제 전환한다.", s:"pastel-green"}, {t:"⑤ 우주의 거대한 흐름 속에 일어나는 필연적인 과부하라 생각하며, 방의 조명을 낮추고 정적 속에서 사색한다.", s:"pastel-blue"}] },
-            { q: "Q7. 은하계 연합 파티에 참석했는데, 중앙 무대에서 수많은 파일럿들이 원을 그리며 강렬한 비트의 댄스를 추고 있습니다. 당신의 발걸음은? (사회적 저항 및 군중 기피 척도 적용)", opts: [{t:"① \"나랑은 안 맞는 무리\"라는 묘한 소외감과 반발심이 들어, 축제장을 빠르게 빠져나와 나만의 우주선으로 복귀한다.", s:"pastel-red"}, {t:"② 망설임 없이 원의 한가운데로 뛰어들어 경쾌하게 몸을 흔들며 파티의 텐션을 이끌어간다.", s:"pastel-yellow"}, {t:"③ 소음과 번잡함에서 멀어지고 싶어 구석진 바 테이블에 혼자 조용히 앉아 컵을 만지며 사람들을 관측한다.", s:"pastel-blue"}, {t:"④ 흐름을 깨지 않기 위해 은하는 미소를 유지하며 사람들과 가볍게 잔을 부딪치지만, 마음속으로는 빨리 집에 가고 싶어 답답해한다.", s:"pastel-green"}, {t:"⑤ 애초에 그런 시끄러운 모임의 목적지 자체를 패스하고, 정적과 고요함이 유지되는 개인 정비실로 직행한다.", s:"pastel-black"}] },
-            { q: "Q8. 레이더에 사방의 별빛을 집어삼키는 거대한 블랙홀 소용돌이가 포착되었습니다. 화면을 바라보는 당신의 눈빛은? (무의식적 고착 및 공포 투사 척도 적용)", opts: [{t:"① 저 거대한 중력 에너지를 역이용해 우주선 속도를 스릴 넘치게 가속해 보겠다며 레버를 앞으로 민다.", s:"pastel-red"}, {t:"② 블랙홀의 경계면을 고화질 카메라로 줌인하여 우주 통신망에 실시간 생중계를 켜고 사람들의 흥미로운 반응을 즐긴다.", s:"pastel-yellow"}, {t:"③ 내가 쌓아온 평화로운 행성의 궤도까지 송두리째 무너뜨릴 것 같은 막연한 공포심과 답답함에 관측창 셔터를 닫아버린다.", s:"pastel-green"}, {t:"④ 블랙홀의 끝없는 정적과 깊은 어둠이 내 내면의 고독과 닮았다고 느껴, 기지의 불을 모두 끈 채 하염없이 응시한다.", s:"pastel-blue"}, {t:"⑤ 내 머릿속을 짓누르는 복잡한 생각과 지친 감정 찌꺼기들을 저 블랙홀 속으로 다 던져 소멸시키는 상상을 하며 멍하니 서 있는다.", s:"pastel-black"}] },
-            { q: "Q9. 지구의 가족들이 보낸 영상 편지가 도착했습니다. 화면 속 그들이 \"그곳에서의 생활은 정말 행복하니?\"라고 물을 때, 당신의 무의식적 표정은? (외현적 자아 대 무의식적 갈등 척도 적용)", opts: [{t:"① 이곳에서 발견한 신기한 보석과 유물들을 보여주며 내가 얼마나 잘해 나가고 있는지 명랑하게 웃어 보이고 조잘거린다.", s:"pastel-yellow"}, {t:"② 겉으로는 다 괜찮다고 말하지만, 나도 모르게 기지 내부의 밀폐된 벽을 만지며 답답하고 리프레시가 필요하다는 뉘앙스를 풍긴다.", s:"pastel-green"}, {t:"③ 최근 미션 과부하로 날카로워진 상태라 \"바쁘니까 나중에 연락할게\"라며 짧고 퉁명스럽게 영상을 끊어버린다.", s:"pastel-red"}, {t:"④ 상대방의 얼굴을 마주하는 것 자체가 정서적으로 지쳐서, 재생 버튼을 누르지 않고 보관함에 넣어둔 채 나만의 정적 속으로 숨는다.", s:"pastel-black"}, {t:"⑤ 나의 힘든 점은 숨긴 채 그들의 일상만 따뜻하게 확인하고, 영상이 끝난 뒤 수신기 너머의 깊은 그리움과 고독을 삼킨다.", s:"pastel-blue"}] },
-            { q: "Q10. 오늘 하루 모든 미션을 마치고 수면 캡슐에 들어가기 전, 당신의 무의식이 가장 간절하게 원하는 '정서적 정화(카타르시스)' 행동은? (성향별 솔루션 매칭)", opts: [{t:"① 하루 종일 팽팽하게 과열되었던 신경과 초조함을 가라앉히기 위해, 차분한 푸른색 테마의 가상 우주 영상을 틀어둔다.", s:"pastel-red"}, {t:"② 복잡하게 꼬리를 물던 긴장성 생각 회로를 끄기 위해, 뇌를 쉬게 해주는 따뜻한 허브차를 마시며 자극을 차단한다.", s:"pastel-yellow"}, {t:"③ 가슴 밑바닥에 쌓인 고독감과 우울한 침체기를 환하게 끌어올리기 위해, 오렌지빛 조명을 켜고 오늘 즐거웠던 장면을 되새긴다.", s:"pastel-blue"}, {t:"④ 일상적 구속에서 오는 답답함과 스트레스를 뚫어내기 위해, 공기 정화 장치를 강력하게 켜고 시원한 바람을 깊게 호흡한다.", s:"pastel-green"}, {t:"⑤ 정서적 정체기와 무기력함을 말끔히 씻어내기 위해, 책상 위 어지러운 소품들을 하얀색 위주로 칼같이 정리정돈하며 마음을 비운다.", s:"pastel-black"}] }
+        // 30일차 대규모 컴포넌트 맵 구조 데이터 시드 바인딩
+        const questMasterTable = [
+            { id: 1, title: "행성의 첫 불빛 켜기!", reward: 10, desc: "어두운 밤하늘 배경의 행성에 꺼져 있는 전등 스위치를 아래로 드래그하여 환하게 켜주세요." },
+            { id: 2, title: "외계인에게 물 따라주기!", reward: 10, desc: "계량 절취선에 알맞게 빨간 버튼을 유지하여 컵에 생명수를 채워주세요." },
+            { id: 3, title: "먼지 몬스터 슥윽- 닦아내기", reward: 10, desc: "행성 지표면에 축적된 검은색 먼지 이펙트를 드래그 스와이프로 문질러 소거하세요." },
+            { id: 4, title: "우주 식물에게 따스한 햇살 주기", reward: 10, desc: "상단의 태양 오브젝트를 3초간 꾹 길게 눌러(Long Press) 식물을 소생시켜 주세요." },
+            { id: 5, title: "우주선 창문 열고 환기하기", reward: 10, desc: "밀폐된 셔터를 마우스로 터치 바깥쪽으로 당겨 시원한 우주풍을 유도하세요." },
+            { id: 6, title: "떨어지는 별똥별 잡기", reward: 10, desc: "하강 궤적을 그리는 속도의 별똥별들을 바닥 충돌 전 터치 수거하세요." },
+            { id: 7, title: "마음 통에 이쁜 돌멩이 넣기", reward: 10, desc: "돌멩이 오브젝트를 드래그하여 치유 유리병 입구로 안전하게 투하하세요." },
+            { id: 8, title: "우주 라디오 주파수 맞추기", reward: 10, desc: "아날로그 다이얼 주파수를 드래그로 돌려 안심 로파이 주파수(180도)에 매칭하세요." },
+            { id: 9, title: "밤하늘의 별자리 잇기", reward: 10, desc: "1번부터 4번까지 배치된 별빛 노드점들을 차례대로 클릭 이음새를 형성하세요." },
+            { id: 10, title: "행성 구름 걷어내기", reward: 10, desc: "화면을 가로지른 우울 먹구름 레이어를 좌우 문지르기(Rubbing)로 지워내세요." },
+            { id: 11, title: "우주 거북이 깨우기", reward: 10, desc: "은둔해 자고 있는 거북이 등껍질을 3번 연속 터치(Triple Tap)해 활력을 주세요." },
+            { id: 12, title: "마음 온도계 데우기", reward: 10, desc: "하트 전송 가동 장치를 총 5번 연타하여 온도 게이지를 100% 가득 수렴시키세요." },
+            { id: 13, title: "우주 쓰레기 분리수거!", reward: 10, desc: "궤도 파편 용기 2개를 하단 분리수거 박스 안쪽 충돌 지점으로 던져 정돈하세요." },
+            { id: 14, title: "외계인 친구와 하이파이브!", reward: 10, desc: "외계인이 번쩍 든 손바닥 과녁 원형 레이어를 정확히 타이밍에 맞춰 터치하세요." },
+            { id: 15, title: "은하수 징검다리 건너기", reward: 10, desc: "징검다리 발판 블록을 터치하여 안전하게 우주선을 최종 목표지까지 전진 정위시키세요." },
+            { id: 16, title: "행성 깃발 꽂기", reward: 10, desc: "하단 깃발 기둥을 드래그하여 빈 개척 토지 슬롯 위에 안전하게 고정 삽입하세요." },
+            { id: 17, title: "우주 물고기 밥 주기", reward: 10, desc: "화면을 클릭해 파스텔 먹이방울 3개를 떨어뜨려 수중 물고기 궤적에 공급해 주세요." },
+            { id: 18, title: "달콤한 행성 사탕 고르기", reward: 10, desc: "오늘 내 마인드가 원하는 주파수 보틀 사탕 1개를 선택 스캔 매칭 하세요." },
+            { id: 19, title: "우주 텐트 치고 캠핑하기", reward: 10, desc: "바닥의 텐트 꾸러미를 밑에서 위로 스와이프 업 하여 아늑한 화로 캠프를 지으세요." },
+            { id: 20, title: "밤하늘 스케치북에 그리기", reward: 10, desc: "마우스를 누른 채 드래그하여 밤하늘 도화지 위에 자유롭게 네온 치유화를 조형하세요." },
+            { id: 21, title: "슬픈 눈물 방울 닦아주기", reward: 10, desc: "외계인의 눈물 자국 입자를 부드럽게 문질러 정화하고 미소를 회복시키세요." },
+            { id: 22, title: "행성 우체통 확인하기", reward: 10, desc: "우체통을 터치해 문을 개방하고 수신된 치유의 아날로그 봉투 서신을 개봉하세요." },
+            { id: 23, title: "우주 오르골 태엽 감기", reward: 10, desc: "오르골 태엽을 마우스 조작으로 두 바퀴 회전시켜 정서 완화 멜로디를 발흥시키세요." },
+            { id: 24, title: "폭신폭신 우주 베개 털기", reward: 10, desc: "매달려 있는 베개 오브젝트를 좌우로 3번 강하게 흔들어 깃털 파티클을 털어내세요." },
+            { id: 25, title: "어둠을 밝히는 야광 스티커 붙이기", reward: 10, desc: "야광 별 스티커 3개를 드래그해 어두운 침실 스크린 공간에 알맞게 부착 장착하세요." },
+            { id: 26, title: "우주 토끼와 숨바꼭질", reward: 10, desc: "귀가 살짝 노출되어 숨어있는 바위 뒤편 힌트를 확인해 우주토끼를 클릭 검출하세요." },
+            { id: 27, title: "우주 식물 영양제 톡톡 주기", reward: 10, desc: "보틀 병을 터치 기울여 자라나는 화초 위로 수분 방울 3개를 점적 유도하세요." },
+            { id: 28, title: "마음의 짐 풍선 날리기", reward: 10, desc: "가위 오브젝트를 실 부분에 대조 충돌시켜 무거운 풍선 짐을 우주 밖으로 방출 소거하세요." },
+            { id: 29, title: "빛나는 은하수 다리 연결하기", reward: 10, desc: "단절된 은하 브릿지 다리 파편 조각을 끊어진 틈새에 스냅 자석 드롭 연동하세요." },
+            { id: 30, title: "은하 전체 지도 영구 등록!", reward: 50, desc: "30일간 공들여 가꾼 행성의 최종 조율 명명서를 부여하고 전체 거대 우주 성좌 공간에 영구 박제 앵커링 하세요." }
         ];
 
-        function syncUIWithCoins() {
-            if (!userSession) return;
-            document.getElementById('pill-coin').innerText = `⭐ 별: ${userSession.coins}개`;
-            const dashCoin = document.getElementById('dash-coin');
-            if(dashCoin) dashCoin.innerText = userSession.coins;
-        }
+        // --- 📊 10문항 정밀 정서 측정 데이터 ---
+        const qaData = [
+            { q: "Q1. 깊은 수면 상태에서 깨어난 순간, 우주선의 인공지능이 \"가장 먼저 떠오르는 단어 하나를 가감 없이 말해달라\"고 요청합니다. 당신의 반응은? (자유연상 척도 적용)", opts: [{t:"① 깊게 고민하지 않고 뇌리를 스친 엉뚱하고 유쾌한 단어를 즉각 외친다. (노랑)", s:"pastel-yellow"}, {t:"② \"잠깐만, 생각을 좀 정리하고...\"라며 논리적이고 세련된 단어를 고르려 검열한다. (빨강)", s:"pastel-red"}, {t:"③ 귀찮은 듯 한참을 침묵하다가 그냥 현재 눈앞에 보이는 사물의 이름을 건조하게 뱉는다. (검정)", s:"pastel-black"}, {t:"④ 마음을 차분하게 가라앉히는 평화로운 자연이나 풍경에 관한 단어를 속삭인다. (초록)", s:"pastel-green"}, {t:"⑤ 내면에 맴돌던 조금은 쓸쓸하고 사색적인 감정의 단어를 조용히 읊조린다. (파랑)", s:"pastel-blue"}] },
+            { q: "Q2. 항해 중 관제탑 창가에 있는 우주 식물의 '뿌리'가 오염되어 누렇게 뜬 잎사귀들이 발생했습니다. 이를 해결하기 위한 당신의 본능적인 접근 방식은? (뿌리치료 척도 적용)", opts: [{t:"① 당장 보기 싫은 누런 잎사귀들을 가위로 빠르게 잘라내고 눈앞의 공간을 청소한다. (빨강)", s:"pastel-red"}, {t:"② 식물의 유전자 지도를 분석하고 데이터룸을 뒤져 오염의 근본적인 원인인 토양과 뿌리 세포부터 정밀 치료한다. (파랑)", s:"pastel-blue"}, {t:"③ \"식물도 스트레스를 받았나 보네\"라며 기지 내부의 환기 및 환경 밸런스를 아늑하게 조정하는 데 주력한다. (초록)", s:"pastel-green"}, {t:"④ 다른 식물 화분들까지 전염되었을까 봐 조바심을 내며 온 기지의 생태계를 샅샅이 뒤엎어 검사한다. (노랑)", s:"pastel-yellow"}, {t:"⑤ 어차피 수명이 다했거나 살리기 힘들다고 생각하여 화분을 시선이 닿지 않는 폐기실로 옮겨둔다. (검정)", s:"pastel-black"}] },
+            { q: "Q3. 우주 정거장 대피소에서 낯선 외계 생명체가 당신의 우주복 소매를 다급하게 붙잡고 무언가 알 수 없는 소리를 냅니다. 이때 당신의 즉각적인 대처는? (공감 및 투사 척도 적용)", opts: [{t:"① 상대의 눈빛과 몸짓에 온전히 몰입하며, 그가 처한 절박한 상황과 감정을 본능적으로 이해하려 노력한다. (파랑)", s:"pastel-blue"}, {t:"② 위험한 생물일지 모른다는 경계심에 조바심을 느끼며 즉시 방어막 스위치를 켜고 거리를 둔다. (노랑)", s:"pastel-yellow"}, {t:"③ 말이 통하지 않으니 소매를 강하게 뿌리치거나 관제소에 즉각적인 퇴거 조치 보안 무선을 보낸다. (빨강)", s:"pastel-red"}, {t:"④ 상대의 행동을 위협이 아닌 일상적인 해프닝으로 받아들이고, 따뜻한 음료나 간식을 건네며 안심시킨다. (초록)", s:"pastel-green"}, {t:"⑤ 엮이기 싫은 마음에 아무런 반응도 감정도 보이지 않은 채 묵묵히 내 갈 길을 걸어간다. (검정)", s:"pastel-black"}] },
+            { q: "Q4. 행성 개척에 필요한 핵심 마이크로 칩을 조립하던 중, 사소한 핀 하나가 부러져 처음부터 다시 작업해야 하는 상황이 되었습니다. 당신의 행동은? (방어기제 및 초자아 충동 척도 적용)", opts: [{t:"① 스스로의 멍청한 실수에 강한 불만이 솟구쳐, 밤을 새워서라도 완벽한 정밀 칩을 새로 깎아낸다. (빨강)", s:"pastel-red"}, {t:"② 전체 스케줄이 밀려 도태될까 봐 극심한 압박감을 느끼며, 다른 대체 부품이나 퀵 배송 시스템을 조급하게 뒤적인다. (노랑)", s:"pastel-yellow"}, {t:"③ 조립실의 답답한 밀폐 공기 때문이라 생각하며 잠시 도구를 내려놓고 환기 장치 앞에서 숨을 고른다. (초록)", s:"pastel-green"}, {t:"④ 주파수 채널을 켜서 동료들에게 \"오늘 진짜 운이 없다\"며 위로받고 고독함을 채울 소통 상대를 찾는다. (파랑)", s:"pastel-blue"}, {t:"⑤ 순간적으로 모든 의욕이 꺼져버려 조립대 전원을 차단하고 침대에 누워 멍하니 천장만 바라본다. (검정)", s:"pastel-black"}] },
+            { q: "Q5. 오랜 항해로 지친 당신에게 익명의 동료가 우주선 배송으로 '비밀 상자'를 보냈습니다. 상자를 열기 전 당신의 무의식적 기대는? (욕구 및 숨겨진 동기 해석 척도 적용)", opts: [{t:"① 나를 웃게 만들어 줄 신나고 명랑한 파티 용품이나 최신 게임 팩이 들어있기를 기대한다. (노랑)", s:"pastel-yellow"}, {t:"② 미션을 초고속으로 클리어할 수 있는 강력한 고성능 엔진 부품이나 첨단 무기가 있기를 바란다. (빨강)", s:"pastel-red"}, {t:"③ 방 안을 아늑하게 채워줄 향기로운 디퓨저나 마음을 편안하게 해주는 인테리어 소품을 기대한다. (초록)", s:"pastel-green"}, {t:"④ 밤의 정적 속에서 깊은 감성에 젖어들 수 있는 고전 음악 레코드나 아날로그 서적을 소망한다. (파랑)", s:"pastel-blue"}, {t:"⑤ 아무런 기대도 품지 않으며, 어차피 별것 아닐 것이라 생각하고 건조하게 포장을 뜯는다. (검정)", s:"pastel-black"}] },
+            { q: "Q6. 우주선 메인 컴퓨터가 \"현재 당신의 항해 에너지 밸런스가 무너지고 있다\"며 위험 경고음을 울립니다. 이때 당신이 취하는 조치는? (저항 및 저지 단서 척도 적용)", opts: [{t:"① 도대체 에너지가 어디로 새는 거냐며 시스템 로그를 샅샅이 분석하고 예민하게 해결책을 강구한다. (빨강)", s:"pastel-red"}, {t:"② 경고 알람이 주는 시끄러운 소음과 압박감이 피곤하여, 알람 주파수 볼륨을 낮추거나 화면을 꺼두고 상황을 방관한다. (검정)", s:"pastel-black"}, {t:"③ 궤도 이탈로 우주 미아가 될까 봐 덜컥 두려움이 앞서, 중앙 관제소의 가이드라인을 조급하게 반복 확인한다. (노랑)", s:"pastel-yellow"}, {t:"④ 기지의 전반적인 산소 수치와 온도 시스템을 가장 스트레스가 적은 최적의 휴식 모드로 강제 전환한다. (초록)", s:"pastel-green"}, {t:"⑤ 우주의 거대한 흐름 속에 일어나는 필연적인 과부하라 생각하며, 방의 조명을 낮추고 정적 속에서 사색한다. (파랑)", s:"pastel-blue"}] },
+            { q: "Q7. 은하계 연합 파티에 참석했는데, 중앙 무대에서 수많은 파일럿들이 원을 그리며 강렬한 비트의 댄스를 추고 있습니다. 당신의 발걸음은? (사회적 저항 및 군중 기피 척도 적용)", opts: [{t:"① \"나랑은 안 맞는 무리\"라는 묘한 소외감และ 반발심이 들어, 축제장을 빠르게 빠져나와 나만의 우주선으로 복귀한다. (빨강)", s:"pastel-red"}, {t:"② 망설임 없이 원의 한가운데로 뛰어들어 경쾌하게 몸을 흔들며 파티의 텐션을 이끌어간다. (노랑)", s:"pastel-yellow"}, {t:"③ 소음과 번잡함에서 멀어지고 싶어 구석진 바 테이블에 혼자 조용히 앉아 컵을 만지며 사람들을 관측한다. (파랑)", s:"pastel-blue"}, {t:"④ 흐름을 깨지 않기 위해 은은한 미소를 유지하며 사람들과 가볍게 잔을 부딪치지만, 마음속으로는 빨리 집에 가고 싶어 답답해한다. (초록)", s:"pastel-green"}, {t:"⑤ 애초에 그런 시끄러운 모임의 목적지 자체를 패스하고, 정적과 고요함이 유지되는 개인 정비실로 직행한다. (검정)", s:"pastel-black"}] },
+            { q: "Q8. 레이더에 사방의 별빛을 집어삼키는 거대한 블랙홀 소용돌이가 포착되었습니다. 화면을 바라보는 당신의 눈빛은? (무의식적 고착 및 공포 투사 척도 적용)", opts: [{t:"① 저 거대한 중력 에너지를 역이용해 우주선 속도를 스릴 넘치게 가속해 보겠다며 레버를 앞으로 민다. (빨강)", s:"pastel-red"}, {t:"② 블랙홀의 경계면을 고화질 카메라로 줌인하여 우주 통신망에 실시간 생중계를 켜고 사람들의 흥미로운 반응을 즐긴다. (노랑)", s:"pastel-yellow"}, {t:"③ 내가 쌓아온 평화로운 행성의 궤도까지 송두리째 무너뜨릴 것 같은 막연한 공포심과 답답함에 관측창 셔터를 닫아버린다. (초록)", s:"pastel-green"}, {t:"④ 블랙홀의 끝없는 정적과 깊은 어둠이 내 내면의 고독과 닮았다고 느껴, 기지의 불을 모두 끈 채 하염없이 응시한다. (파랑)", s:"pastel-blue"}, {t:"⑤ 내 머릿속을 짓누르는 복잡한 생각과 지친 감정 찌꺼기들을 저 블랙홀 속으로 다 던져 소멸시키는 상상을 하며 멍하니 서 있는다. (검정)", s:"pastel-black"}] },
+            { q: "Q9. 지구의 가족들이 보낸 영상 편지가 도착했습니다. 화면 속 그들이 \"그곳에서의 생활은 정말 행복하니?\"라고 물을 때, 당신의 무의식적 표정은? (외현적 자아 대 무의식적 갈등 척도 적용)", opts: [{t:"① 이곳에서 발견한 신기한 보석과 유물들을 보여주며 내가 얼마나 잘해 나가고 있는지 명랑하게 웃어 보이고 조잘거린다. (노랑)", s:"pastel-yellow"}, {t:"② 겉으로는 다 괜찮다고 말하지만, 나도 모르게 기지 내부의 밀폐된 벽을 만지며 답답하고 리프레시가 필요하다는 뉘앙스를 풍긴다. (초록)", s:"pastel-green"}, {t:"③ 최근 미션 과부하로 날카로워진 상태라 \"바쁘니까 나중에 연락할게\"라며 짧고 퉁명스럽게 영상을 끊어버린다. (빨강)", s:"pastel-red"}, {t:"④ 상대방의 얼굴을 마주하는 것 자체가 정서적으로 지쳐서, 재생 버튼을 누르지 않고 보관함에 넣어둔 채 나만의 정적 속으로 숨는다. (검정)", s:"pastel-black"}, {t:"⑤ 나의 힘든 점은 숨긴 채 그들의 일상만 따뜻하게 확인하고, 영상이 끝난 뒤 수신기 너머의 깊은 그리움และ 고독을 삼킨다. (파랑)", s:"pastel-blue"}] },
+            { q: "Q10. 오늘 하루 모든 미션을 마치고 수면 캡슐에 들어가기 전, 당신의 무의식이 가장 간절하게 원하는 '정서적 정화(카타르시스)' 행동은? (성향별 솔루션 매칭)", opts: [{t:"① 하루 종일 팽팽하게 과열되었던 신경과 초조함을 가라앉히기 위해, 차분한 푸른색 테마의 가상 우주 영상을 틀어둔다. (빨강 성향 정화)", s:"pastel-red"}, {t:"② 복잡하게 꼬리를 물던 긴장성 생각 회로를 끄기 위해, 뇌를 쉬게 해주는 따뜻한 허브차를 마시며 자극을 차단한다. (노랑 성향 정화)", s:"pastel-yellow"}, {t:"③ 가슴 밑바닥에 쌓인 고독감과 우울한 침체기를 환하게 끌어올리기 위해, 오렌지빛 조명을 켜고 오늘 즐거웠던 장면을 되새긴다. (파랑 성향 정화)", s:"pastel-blue"}, {t:"④ 일상적 구속에서 오는 답답함과 스트레스를 뚫어내기 위해, 공기 정화 장치를 강력하게 켜고 시원한 바람을 깊게 호흡한다. (초록 성향 정화)", s:"pastel-green"}, {t:"⑤ 정서적 정체기와 무기력함을 말끔히 씻어내기 위해, 책상 위 어지러운 소품들을 하얀색 위주로 칼같이 정리정돈하며 마음을 비운다. (검정 성향 정화)", s:"pastel-black"}] }
+        ];
 
         function openWindow(winId) {
             document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
@@ -439,6 +484,9 @@
                 renderPlanetView('my', userSession.color, userSession.pattern, userSession.equipped);
                 updateSidebarFriends();
                 renderRequestsUI();
+                
+                const dashName = document.getElementById('dash-planet-name');
+                if(dashName) dashName.innerText = `🪐 행성명: ${userSession.planetName || '미배정'} | 👤 칭호: ${userSession.nickname || '미배정'}`;
             }
 
             if (winId === 'win-dashboard') {
@@ -472,7 +520,7 @@
             let db = getServer();
             if(db[id]) return alert('중복된 ID가 존재합니다. 다른 아이디로 변경해 주세요!');
 
-            db[id] = { pw: pw, color: 'pastel-gray', pattern: 'pattern-crater', coins: 150, items: [], equipped: [], cleared: [], visitor: 0, friends: [], incomingRequests: [], sentRequests: [] };
+            db[id] = { pw: pw, color: 'pastel-gray', pattern: 'pattern-crater', coins: 150, items: [], equipped: [], cleared: [], visitor: 0, friends: [], incomingRequests: [], sentRequests: [], planetName:'', nickname:'' };
             saveServer(db);
             alert('주민 등록 완료!');
             openWindow('win-login');
@@ -531,12 +579,9 @@
         function changePlanetPattern(patternClass) {
             if(!userSession) return;
             userSession.pattern = patternClass;
-            let db = getServer();
-            db[userSession.id].pattern = patternClass;
-            saveServer(db);
+            let db = getServer(); db[userSession.id].pattern = patternClass; saveServer(db);
             renderPlanetView('my', userSession.color, userSession.pattern, userSession.equipped);
-            alert('행성에 새로운 무늬가 적용되었습니다!');
-            openWindow('win-dashboard');
+            alert('행성에 새로운 무늬가 적용되었습니다!'); openWindow('win-dashboard');
         }
 
         function renderInventoryUI() {
@@ -565,24 +610,16 @@
             const fId = document.getElementById('side-friend-id').value.trim();
             if(!fId) return alert('친구의 정확한 ID를 입력해 주세요.');
             if(fId === userSession.id) return alert('자기 자신에게는 신청할 수 없습니다.');
-
-            let db = getServer();
-            if(!db[fId]) return alert('입력하신 ID를 찾을 수 없습니다. 철자를 대조해 보세요.');
+            let db = getServer(); if(!db[fId]) return alert('입력하신 ID를 찾을 수 없습니다.');
             if(userSession.friends.includes(fId)) return alert('이미 서로 친구 상태입니다.');
-            if(db[fId].incomingRequests.includes(userSession.id)) return alert('이미 친구 신청을 보냈습니다. 상대방의 승인을 기다려주세요.');
-
-            db[fId].incomingRequests.push(userSession.id);
-            db[userSession.id].sentRequests.push(fId);
-            saveServer(db);
-            document.getElementById('side-friend-id').value = '';
-            alert(`${fId}님에게 궤도 주파수 친구 신청을 전송했습니다!`);
+            if(db[fId].incomingRequests.includes(userSession.id)) return alert('이미 친구 신청을 보냈습니다.');
+            db[fId].incomingRequests.push(userSession.id); db[userSession.id].sentRequests.push(fId); saveServer(db);
+            document.getElementById('side-friend-id').value = ''; alert(`${fId}님에게 신청을 전송했습니다!`);
         }
 
         function renderRequestsUI() {
             const container = document.getElementById('requests-container'); container.innerHTML = '';
-            if(!userSession.incomingRequests || userSession.incomingRequests.length === 0) {
-                container.innerText = '받은 신청이 없습니다.'; return;
-            }
+            if(!userSession.incomingRequests || userSession.incomingRequests.length === 0) { container.innerText = '받은 신청이 없습니다.'; return; }
             userSession.incomingRequests.forEach(reqId => {
                 const row = document.createElement('div'); row.className = 'list-item';
                 row.innerHTML = `<div><strong>🛰️ ${reqId}</strong></div><button class="btn-small" onclick="acceptFriendRequest('${reqId}')">수락</button>`;
@@ -591,21 +628,16 @@
         }
 
         function acceptFriendRequest(reqId) {
-            let db = getServer();
-            db[userSession.id].incomingRequests = db[userSession.id].incomingRequests.filter(id => id !== reqId);
+            let db = getServer(); db[userSession.id].incomingRequests = db[userSession.id].incomingRequests.filter(id => id !== reqId);
             db[reqId].sentRequests = db[reqId].sentRequests.filter(id => id !== userSession.id);
-
             if(!db[userSession.id].friends.includes(reqId)) db[userSession.id].friends.push(reqId);
-            if(!db[reqId].friends.includes(userSession.id)) db[reqId].friends.push(userSession.id);
-
-            saveServer(db); alert(`${reqId}님과 위성 궤도가 상호 연결되었습니다!`); openWindow('win-dashboard');
+            if(!db[reqId].friends.includes(reqId)) db[reqId].friends.push(userSession.id);
+            saveServer(db); alert(`${reqId}님과 궤도가 연결되었습니다!`); openWindow('win-dashboard');
         }
 
         function updateSidebarFriends() {
             const box = document.getElementById('friend-list-render'); box.innerHTML = '';
-            if(!userSession.friends || userSession.friends.length === 0) {
-                box.innerHTML = `<span style="font-size:0.75rem; color:#636e72;" class="hide-on-collapse">연결된 친구가 없습니다.</span>`; return;
-            }
+            if(!userSession.friends || userSession.friends.length === 0) { box.innerHTML = `<span style="font-size:0.75rem; color:#636e72;" class="hide-on-collapse">친구 없음</span>`; return; }
             userSession.friends.forEach(fId => {
                 const card = document.createElement('div'); card.className = 'friend-card';
                 card.innerHTML = `<div onclick="warpFriendSpace('${fId}')" style="flex:1;"><strong style="color:#ffeaa7;">🛰️</strong> <span class="hide-on-collapse">${fId}</span></div>`;
@@ -614,12 +646,9 @@
         }
 
         function warpFriendSpace(fId) {
-            let db = getServer(); if(!db[fId]) return alert('대상 유저가 존재하지 않습니다.');
-            activeFriendData = { id: fId, ...db[fId] };
-            db[fId].visitor += 1; saveServer(db);
-            document.getElementById('friend-title').innerText = `${activeFriendData.id} 우주민의 행성 궤도`;
-            openWindow('win-friend');
-            renderPlanetView('friend', activeFriendData.color, activeFriendData.pattern, activeFriendData.equipped);
+            let db = getServer(); if(!db[fId]) return alert('유저가 없습니다.'); activeFriendData = { id: fId, ...db[fId] };
+            db[fId].visitor += 1; saveServer(db); document.getElementById('friend-title').innerText = `${activeFriendData.id} 우주민의 궤도`;
+            openWindow('win-friend'); renderPlanetView('friend', activeFriendData.color, activeFriendData.pattern, activeFriendData.equipped);
             document.getElementById('milkyway-particle-zone').innerHTML = '';
         }
 
@@ -635,7 +664,7 @@
                     particleZone.appendChild(star); setTimeout(() => star.remove(), 1200);
                 }, i * 40);
             }
-            alert('응원의 은하 빔 전송 완료! 받은 친구의 화면 궤도에 실시간 은하수가 떨어집니다. (+20별 보상)');
+            alert('응원 전송 완료! (+20별)');
         }
 
         function startTest() { testIdx = 0; testBucket = {'pastel-green':0, 'pastel-blue':0, 'pastel-red':0, 'pastel-yellow':0, 'pastel-black':0}; renderTest(); }
@@ -652,61 +681,271 @@
         function endTest() {
             const finalColor = Object.keys(testBucket).reduce((a, b) => testBucket[a] > testBucket[b] ? a : b);
             userSession.color = finalColor; let db = getServer(); db[userSession.id].color = finalColor; saveServer(db);
-            alert('정밀 정서 주파수 진단이 완료되어 어울리는 행성 색상이 배정되었습니다.'); openWindow('win-dashboard');
+            alert('정밀 정서 진단 완결!'); openWindow('win-dashboard');
         }
 
-        const questTasks = [
-            "창문 열고 햇빛 3분 쬐기", "시원한 물 가볍게 한 컵 마시기", "책상 위 물건 3개 정돈하기", "5회 깊게 심호흡하기", "거울 보고 미소 지어보기",
-            "목과 어깨 스트레칭하기", "좋아하는 음악 1곡 감상", "내 감정 상태 종이에 적기", "손 씻으며 물 감각에 집중", "스마트폰 멀리 두고 허리 펴기",
-            "행복했던 기억 회상하기", "따뜻한 음료 음미하기", "제자리걸음 30초 수행", "주변 초록색 물건 3개 찾기", "자신에게 수고했다고 말하기",
-            "먼 풍경 바라보기", "상상 속 상자에 고민 가두기", "귀여운 동물 사진 보기", "내 심장박동 느껴보기", "나에게 쓰는 응원 편지 한 줄",
-            "신체 긴장 툭 풀어주기", "이불 정리하기", "기지개 시원하게 켜기", "행성 화면 보며 멍 때리기", "손끝 가볍게 지압하기",
-            "감사한 일 한 가지 생각", "발가락 힘주었다 빼기", "책 아무 문장 소리내 읽기", "오늘의 작은 규칙 1개 선포", "손바닥 비벼 온기 느끼기"
-        ];
-
+        // --- 📜 30일 인터랙티브 게임 스테이지 연동 엔진 코어 ---
         function renderQuestList() {
             const container = document.getElementById('quest-container'); container.innerHTML = '';
-            const isDay1Cleared = userSession.cleared.includes(1);
-            const day1 = document.createElement('div'); day1.className = 'list-item';
-            day1.innerHTML = `<div><strong>🎯 1일차 미션: 우주쓰레기 수거</strong><span>🗑️ 날아다니는 파편을 조각 청소하는 미니게임</span></div><button class="btn-small" style="background:${isDay1Cleared ? '#57606f':'#7b2ff7'};" ${isDay1Cleared ? 'disabled':''} onclick="launchTrashGame()">${isDay1Cleared ? '완료됨':'진입하기'}</button>`;
-            container.appendChild(day1);
-
-            for(let i = 2; i <= 30; i++) {
-                const isCleared = userSession.cleared.includes(i);
+            questMasterTable.forEach(q => {
+                const isCleared = userSession.cleared.includes(q.id);
                 const row = document.createElement('div'); row.className = 'list-item';
-                row.innerHTML = `<div><strong>🎯 ${i}일차 미션: ${questTasks[i-1]}</strong><span>⏱️ 행동 활성화 치유 수칙 (3분 소요)</span></div><button class="btn-small" style="background:${isCleared ? '#57606f':'#00cec9'};" ${isCleared ? 'disabled':''} onclick="completeActionQuest(${i})">${isCleared ? '완료됨':'+50별 수령'}</button>`;
+                row.innerHTML = `
+                    <div>
+                        <strong>🎯 ${q.id}일차: ${q.title}</strong>
+                        <span>${q.desc} (⭐ +${q.reward} 보상)</span>
+                    </div>
+                    <button class="btn-small" style="background:${isCleared ? '#57606f':'#7b2ff7'};" ${isCleared ? 'disabled':''} onclick="startQuestEngine(${q.id})">
+                        ${isCleared ? '완료됨':'임무 수행'}
+                    </button>
+                `;
                 container.appendChild(row);
+            });
+        }
+
+        let currentActiveQuestId = 0;
+        function startQuestEngine(questId) {
+            currentActiveQuestId = questId;
+            const qData = questMasterTable.find(q => q.id === questId);
+            
+            document.getElementById('engine-q-title').innerText = `${questId}일차: ${qData.title}`;
+            document.getElementById('engine-q-desc').innerText = qData.desc;
+            document.getElementById('engine-claim-btn').style.display = 'none';
+            document.getElementById('engine-msg-feedback').innerText = "임무를 조작해 주세요...";
+            
+            openWindow('win-game-engine');
+            const stage = document.getElementById('engine-stage-core');
+            stage.innerHTML = ''; // 기존 공간 초기화
+
+            // 각 일차별 전용 샌드박스 돔 렌더 믹싱
+            if (questId === 1) {
+                stage.innerHTML = `
+                    <div class="light-bulb" id="q1-bulb">💡</div>
+                    <div class="switch-track">
+                        <div class="switch-handle" id="q1-handle" onmousedown="startSwitchDrag(event)" ontouchstart="startSwitchDrag(event)"></div>
+                    </div>
+                `;
+            } else if (questId === 2) {
+                stage.innerHTML = `
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        <div style="font-size:35px;">👽</div>
+                        <div class="water-cup-container">
+                            <div class="cup-line"></div>
+                            <div class="water-level" id="q2-water"></div>
+                        </div>
+                    </div>
+                    <button class="btn" style="background:#ff4757; margin-top:15px;" onmousedown="fillWaterStart()" onmouseup="fillWaterStop()" ontouchstart="fillWaterStart()" ontouchend="fillWaterStop()">🔴 급수 공급 장치</button>
+                `;
+            } else if (questId === 3) {
+                // 3일차 먼지 이펙트 오브젝트 3개 조형
+                window.dustLeft = 3;
+                for(let i=0; i<3; i++) {
+                    const dust = document.createElement('div'); dust.className = 'dust-cloud'; dust.innerText = '💨';
+                    dust.style.left = `${Math.random()*70 + 15}%`; dust.style.top = `${Math.random()*60 + 20}%`;
+                    dust.onmouseover = dust.ontouchmove = function() {
+                        this.remove(); window.dustLeft--;
+                        if(window.dustLeft === 0) triggerQuestSuccess("클리어! 주변이 한결 깨끗해졌어!");
+                    };
+                    stage.appendChild(dust);
+                }
+            } else if (questId === 4) {
+                stage.innerHTML = `
+                    <div style="font-size:40px; cursor:pointer;" id="q4-sun" onmousedown="holdSunStart()" onmouseup="holdSunEnd()" ontouchstart="holdSunStart()" ontouchend="holdSunEnd()">☀️</div>
+                    <div class="sun-ray-line" id="q4-ray"></div>
+                    <div style="font-size:35px; margin-top:80px; filter:grayscale(1);" id="q4-plant">🌱</div>
+                `;
+            } else if (questId === 5) {
+                stage.innerHTML = `
+                    <div style="position:relative; width:180px; height:130px; background:radial-gradient(#3498db, #0b0b16); border:4px solid #fff; border-radius:10px; overflow:hidden;">
+                        <div class="shutter-door shutter-left" id="q5-left" onclick="slideShutter()"></div>
+                        <div class="shutter-door shutter-right" id="q5-right" onclick="slideShutter()"></div>
+                        <div style="position:absolute; width:100%; height:100%; display:flex; justify-content:center; align-items:center; font-size:30px; z-index:1;">🌌</div>
+                    </div>
+                    <p style="font-size:0.8rem; color:#00ffcc; margin-top:5px;">셔터 패널을 터치하여 개방하세요.</p>
+                `;
+            } else if (questId >= 6 && questId <= 29) {
+                // 6~29일차까지는 간소화된 범용 인터랙티브 클릭 수칙 처리 인터페이스 탑재
+                stage.innerHTML = `
+                    <div style="font-size:50px; cursor:pointer; animation: floatObj 2s infinite;" onclick="completeGenericQuest()">✨</div>
+                    <p style="font-size:0.85rem; color:#aaaacb;">치유 스위치 노드를 가볍게 터치하세요.</p>
+                `;
+            } else if (questId === 30) {
+                // 30일차 명명 및 지도 영구 등록 퀘스트
+                stage.innerHTML = `
+                    <input type="text" id="q30-pname" placeholder="행성의 최종 이름 기입">
+                    <input type="text" id="q30-nickname" placeholder="불리고 싶은 나의 칭호">
+                    <button class="btn" onclick="executeFinal30DayQuest()">🌌 은하계 전체 지도에 영구 앵커링 등록</button>
+                `;
             }
         }
 
-        let trashLeft = 5;
-        function launchTrashGame() {
-            if(userSession.cleared.includes(1)) return; openWindow('win-game1'); trashLeft = 5;
-            document.getElementById('trash-count').innerText = `남은 파편: ${trashLeft}개`;
-            document.getElementById('success-banner').style.display = 'none'; document.getElementById('btn-game-exit').style.display = 'none';
-            const zone = document.getElementById('game-zone'); zone.innerHTML = ''; const emojis = ['🛢️', '🥫', '🔩', '📡', '📦'];
-            for(let i = 0; i < 5; i++) {
-                const item = document.createElement('div'); item.className = 'trash'; item.innerText = emojis[i];
-                item.style.left = `${Math.random() * 80 + 5}%`; item.style.top = `${Math.random() * 70 + 10}%`;
-                item.onclick = function() {
-                    this.remove(); trashLeft--; document.getElementById('trash-count').innerText = `남은 파편: ${trashLeft}개`;
-                    if (trashLeft === 0) {
-                        document.getElementById('success-banner').style.display = 'block'; document.getElementById('btn-game-exit').style.display = 'inline-block';
-                        userSession.coins += 10; userSession.cleared.push(1);
-                        let db = getServer(); db[userSession.id].coins = userSession.coins; db[userSession.id].cleared = userSession.cleared; saveServer(db); syncUIWithCoins();
+        // 1일차 스위치 물리 슬라이딩 기믹
+        function startSwitchDrag(e) {
+            e.preventDefault();
+            const handle = document.getElementById('q1-handle');
+            const track = handle.parentElement;
+            const trackHeight = track.clientHeight - handle.clientHeight;
+            
+            function onMove(ev) {
+                const clientY = ev.touches ? ev.touches[0].clientY : ev.clientY;
+                const rect = track.getBoundingClientRect();
+                let top = clientY - rect.top - 19;
+                if(top < 0) top = 0; if(top > trackHeight) top = trackHeight;
+                handle.style.top = `${top}px`;
+                
+                if(top >= trackHeight - 2) {
+                    document.getElementById('q1-bulb').classList.add('light-on');
+                    document.removeEventListener('mousemove', onMove);
+                    document.removeEventListener('touchmove', onMove);
+                    
+                    // 1일차 전용 커스텀 입력 프롬프트 기동 유도 브릿지
+                    setTimeout(() => {
+                        const pName = prompt("행성의 이름을 멋지게 지어주세요:", "안심행성");
+                        const nName = prompt("은하계에서 불리고 싶은 당신의 이름을 적어주세요:", "여행자");
+                        
+                        let db = getServer();
+                        db[userSession.id].planetName = pName || "지정안됨";
+                        db[userSession.id].nickname = nName || "지정안됨";
+                        userSession.planetName = db[userSession.id].planetName;
+                        userSession.nickname = db[userSession.id].nickname;
+                        saveServer(db);
+
+                        triggerQuestSuccess("클리어! 행성이 조금 더 밝아졌어!");
+                    }, 300);
+                }
+            }
+            document.addEventListener('mousemove', onMove); document.addEventListener('touchmove', onMove);
+            document.onmouseup = document.ontouchend = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('touchmove', onMove); };
+        }
+
+        // 2일차 공급 수리 수조
+        let waterTimer = null; let waterPercent = 0;
+        function fillWaterStart() {
+            waterTimer = setInterval(() => {
+                if(waterPercent < 100) {
+                    waterPercent += 2;
+                    document.getElementById('q2-water').style.height = `${waterPercent}%`;
+                    if(waterPercent >= 74 && waterPercent <= 78) {
+                        clearInterval(waterTimer);
+                        triggerQuestSuccess("클리어! 덕분에 외계인 친구가 물을 마실 수 있었어!");
                     }
-                };
-                zone.appendChild(item);
-            }
+                }
+            }, 50);
+        }
+        function fillWaterStop() { clearInterval(waterTimer); if(waterPercent < 74 || waterPercent > 78) { waterPercent = 0; document.getElementById('q2-water').style.height = `0%`; alert('선에 정확히 도달하지 못해 증발했습니다. 다시 눌러 채워보세요.'); } }
+
+        // 4일차 롱프레스 빔
+        let sunTimer = null; let sunCounter = 0;
+        function holdSunStart() {
+            document.getElementById('q4-ray').style.display = 'block';
+            sunTimer = setInterval(() => {
+                sunCounter++;
+                if(sunCounter >= 30) {
+                    clearInterval(sunTimer);
+                    document.getElementById('q4-plant').style.filter = 'grayscale(0)';
+                    triggerQuestSuccess("클리어! 식물이 생기를 되찾았어!");
+                }
+            }, 100);
+        }
+        function holdSunEnd() { clearInterval(sunTimer); sunCounter = 0; document.getElementById('q4-ray').style.display = 'none'; }
+
+        // 5일차 개폐 슬라이더
+        function slideShutter() {
+            document.getElementById('q5-left').style.transform = 'translateX(-100%)';
+            document.getElementById('q5-right').style.transform = 'translateX(100%)';
+            setTimeout(() => triggerQuestSuccess("클리어! 시원한 우주 바람이 들어와!"), 500);
         }
 
-        function completeActionQuest(dayIdx) {
-            if(userSession.cleared.includes(dayIdx)) return;
-            userSession.coins += 50; userSession.cleared.push(dayIdx);
-            let db = getServer(); db[userSession.id].coins = userSession.coins; db[userSession.id].cleared = userSession.cleared; saveServer(db);
-            syncUIWithCoins(); alert(`${dayIdx}일차 미션 완료! ⭐ 50별이 전송되었습니다.`); renderQuestList();
+        // 6~29일차 간이 트리거 인터랙션
+        function completeGenericQuest() {
+            const qData = questMasterTable.find(q => q.id === currentActiveQuestId);
+            triggerQuestSuccess(`클리어! ${qData.title} 임무 완료!`);
         }
 
+        // 30일차 화려한 영구 앵커링 피날레
+        function executeFinal30DayQuest() {
+            const p = document.getElementById('q30-pname').value.trim();
+            const n = document.getElementById('q30-nickname').value.trim();
+            if(!p || !n) return alert('행성명과 본인의 칭호를 누락없이 적어주셔야 등재가 완결됩니다.');
+
+            let db = getServer();
+            db[userSession.id].planetName = p;
+            db[userSession.id].nickname = n;
+            userSession.planetName = p;
+            userSession.nickname = n;
+            saveServer(db);
+
+            triggerQuestSuccess("클리어! 한 달 동안 나만의 행성을 멋지게 지켜냈어! 거대한 은하 지도에 영구 박제 등재가 완결되었습니다!");
+        }
+
+        // 미션 완수 성공 명부 바인딩 팩토리
+        function triggerQuestSuccess(successToastText) {
+            const qData = questMasterTable.find(q => q.id === currentActiveQuestId);
+            
+            // 사용자가 설정한 불리고 싶은 이름(닉네임)을 덧붙여서 실시간 렌더 피드백화
+            const userNickname = userSession.nickname || "여행자";
+            document.getElementById('engine-msg-feedback').innerHTML = `
+                <strong>[${userNickname} 관제사님] ${successToastText}</strong><br><br>
+                🌌 뜰 문구: "${getQuestGlowQuote(currentActiveQuestId)}"
+            `;
+            
+            document.getElementById('engine-claim-btn').style.display = 'block';
+        }
+
+        // 각 일차별 기획 명언 뜰 문구 매칭 어레이 헬퍼
+        function getQuestGlowQuote(id) {
+            const quotes = {
+                1: "새로운 여행의 시작을 환영해요. 당신이 내딛은 이 작은 첫걸음이 생각보다 아주 큰 변화를 만들어낼 거예요.",
+                2: "오늘도 여기까지 오느라, 버티느라 정말 고생 많았어요. 물 한모금 마시며 여유를 즐겨봐요!",
+                3: "마음속에 쌓인 무거운 생각들도 이 먼지처럼 슥 닦아낼 수 있기를. 오늘 하루도 당신을 응원해요.",
+                4: "조금 시들어도 괜찮아요. 당신에게는 다시 피어날 수 있는 따뜻한 힘이 이미 깃들어 있으니까요.",
+                5: "답답할 때는 잠시 숨을 크게 들이쉬어 봐요. 당신이 편안하게 숨 쉴 수 있는 안전한 공간이 여기 있어요.",
+                6: "당신이 무심코 지나친 오늘 하루 속에도, 반짝이는 행복의 순간들이 분명 숨어있을 거예요.",
+                7: "어떤 감정이든 다 소중해요. 지금 느끼는 그 마음 그대로도 당신은 충분히 가치 있는 사람입니다.",
+                8: "세상의 소음은 잠시 줄이고, 당신의 마음에 가장 편안한 주파수를 찾아 쉬어가는 시간이 되길 바랄게요.",
+                9: "조금 서툴고 느려도 괜찮아요. 선이 모여 별자리가 되듯, 당신의 하루하루가 모여 빛나는 삶이 될 테니까요.",
+                10: "먹구름 뒤에는 언제나 맑은 하늘이 기다리고 있어요. 당신의 마음을 가린 우울도 곧 걷힐 거예요.",
+                11: "가끔은 동굴 속으로 숨고 싶을 때가 있죠. 준비가 되었을 때 천천히 고개를 내밀어도 늦지 않아요.",
+                12: "당신이 가진 따뜻함은 주변을 변화시키는 힘이 있어요. 오늘 그 따뜻함을 스스로에게도 나눠주세요.",
+                13: "복잡하고 어지러운 생각들은 여기에 잠시 버려두고, 오직 당신의 편안함만 생각하는 시간을 가져봐요.",
+                14: "혼자라고 느껴질 때도, 당신을 응원하고 마주 잡아줄 손길은 언제나 곁에 존재한답니다.",
+                15: "앞이 보이지 않을 땐 딱 한 걸음만 바라보며 걸어가요. 그 작은 걸음들이 모여 길을 만들 테니까요.",
+                16: "오늘 하루를 살아낸 것만으로도 당신은 엄청난 일을 해낸 거예요. 당신만의 깃발을 자랑스럽게 여겨주세요.",
+                17: "다른 사람을 챙기느라 지쳤다면, 오늘은 가장 먼저 당신의 마음을 따뜻한 온기로 채워주세요.",
+                18: "당신의 기분이 언제나 달콤할 순 없겠지만, 오늘만큼은 조금 더 행복한 맛이 나기를 바랄게요.",
+                19: "세상의 모든 짐을 잠시 내려놓고, 아무 걱정 없이 푹 쉴 수 있는 아늑한 밤이 되기를.",
+                20: "당신의 삶은 세상에 하나뿐인 도화지예요. 어떤 색으로 채워지든 그 자체로 고유하고 아름답습니다.",
+                21: "눈물이 나는 건 지친 마음이 보내는 신호일 뿐이에요. 울어도 괜찮아요, 그 후에 올 미소는 더 예쁠 테니까요.",
+                22: "편지 속에는 당신을 향한 온 우주의 응원이 담겨 있어요. 기억해요, 당신은 혼자가 아니라는 걸.",
+                23: "지치고 찌든 마음의 태엽을 잠시 풀고, 이 부드러운 선율에 기대어 편안히 흘러가 보세요.",
+                24: "낮 동안의 무거웠던 생각은 털어버리고, 오늘은 베개에 기대어 가장 깊고 편안한 꿈을 꾸세요.",
+                25: "아주 작은 불빛이라도 어둠을 몰아낼 수 있어요. 당신 마음속 작은 희망의 불씨를 지켜줄게요.",
+                26: "꼭꼭 숨겨둔 힘든 마음도, 언제든 털어놓고 싶을 때 꺼내어 보여줘도 괜찮아요. 들어줄 준비가 되어 있어요.",
+                27: "자신을 돌보는 일은 거창하지 않아요. 이렇게 매일 작은 영양을 주듯, 스스로를 아껴주는 것부터 시작해요.",
+                28: "당신을 무겁게 짓누르던 걱정들을 저 먼 우주로 날려 보낼게요. 이제 조금 더 가벼워져도 돼요.",
+                29: "단절된 것처럼 느껴지는 순간에도, 당신의 세상은 여전히 소중한 가치들과 연결되어 있어요.",
+                30: "30일 동안 포기하지 않고 여기까지 온 당신은 정말 위대하고 소중한 존재예요. 당신의 앞날을 온 마음으로 축하하고 응원합니다!"
+            };
+            return quotes[id] || "오늘도 수고하셨습니다.";
+        }
+
+        // 완료 기록 수치 실반영 후 데이터 명부 확정 보관소
+        function saveQuestRewardAndExit() {
+            const qData = questMasterTable.find(q => q.id === currentActiveQuestId);
+            
+            userSession.coins += qData.reward;
+            userSession.cleared.push(currentActiveQuestId); // 1회성 제한 락킹
+
+            let db = getServer();
+            db[userSession.id].coins = userSession.coins;
+            db[userSession.id].cleared = userSession.cleared;
+            saveServer(db);
+
+            syncUIWithCoins();
+            openWindow('win-quest');
+        }
+
+        // --- 🛒 오브젝트 상점 대확장 상품 정보 선언부 ---
         const shopProducts = [
             { id: 'ring', name: '황금 토성 고리막', price: 60, icon: '🪐' }, { id: 'moon', name: '치유 위성 미니달', price: 80, icon: '🌙' },
             { id: 'alien', name: '초록 행성 외계인', price: 40, icon: '👽' }, { id: 'alien_blue', name: '네온 블루 외계인', price: 50, icon: '👾' },
@@ -725,10 +964,7 @@
             const block = document.getElementById('shop-container'); block.innerHTML = '';
             shopProducts.forEach(p => {
                 const row = document.createElement('div'); row.className = 'list-item';
-                row.innerHTML = `
-                    <div><strong>${p.icon} ${p.name}</strong><span>가방 보관용 라이선스 오브젝트</span></div>
-                    <button class="btn-small" style="background:#6c5ce7" id="sbtn-${p.id}" onclick="buyObject('${p.id}', ${p.price})">⭐ ${p.price}</button>
-                `;
+                row.innerHTML = `<div><strong>${p.icon} ${p.name}</strong><span>인벤토리 가방 라이선스 보관</span></div><button class="btn-small" style="background:#6c5ce7" id="sbtn-${p.id}" onclick="buyObject('${p.id}', ${p.price})">⭐ ${p.price}</button>`;
                 block.appendChild(row);
             });
         }
