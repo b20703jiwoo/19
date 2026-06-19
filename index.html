@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마음 은하계 (Mind Galaxy) - 10문항 정밀 측정 완성본</title>
+    <style>
+        body {
+            margin: 0; background-color: #0b0b16; color: #ffffff;
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; overflow: hidden;
+            background: radial-gradient(circle at center, #1a103c 0%, #070412 100%);
+            min-height: 100vh; display: flex; justify-content: center; align-items: center;
+        }
+        .stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(white 1px, transparent 0), radial-gradient(rgba(255,255,255,0.4) 2px, transparent 0);
+            background-size: 550px 550px, 350px 350px; animation: bgMove 100s linear infinite; opacity: 0.5; z-index: 1;
+        }
+        @keyframes bgMove { from { background-position: 0 0; } to { background-position: 550px 1100px; } }
+
+        .app-container { display: flex; width: 100%; max-width: 900px; gap: 15px; z-index: 10; padding: 10px; box-sizing: border-box; position: relative; }
+        
+        /* 👥 접기/펼치기가 적용된 친구 사이드바 */
+        .sidebar {
+            width: 240px; background: rgba(10, 10, 30, 0.85); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px;
+            padding: 20px 15px; box-sizing: border-box; display: none; flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); max-height: 85vh; transition: width 0.3s ease;
+        }
+        .sidebar.active { display: flex; }
+        .sidebar.collapsed { width: 65px; padding: 20px 5px; }
+        .sidebar.collapsed .hide-on-collapse { display: none; }
+        
+        .friend-list-box { flex: 1; overflow-y: auto; margin-top: 15px; }
+        .friend-card {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+            padding: 10px; border-radius: 12px; margin-bottom: 6px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;
+        }
+        .friend-card:hover { background: rgba(0, 255, 204, 0.15); border-color: #00ffcc; }
+
+        /* 📱 메인 윈도우 */
+        .window {
+            display: none; background: rgba(15, 15, 35, 0.85); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15); padding: 25px 20px;
+            border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            flex: 1; box-sizing: border-box; max-height: 85vh; overflow-y: auto; text-align: center;
+        }
+        .window.active { display: block; }
+        .window::-webkit-scrollbar, .sidebar::-webkit-scrollbar { width: 4px; }
+        .window::-webkit-scrollbar-thumb, .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+        h1, h2, h3 { margin-top: 0; text-shadow: 0 0 15px rgba(0, 255, 204, 0.4); }
+        .title-glow { font-size: 1.8rem; color: #00ffcc; }
+        .subtitle { color: #aaaacb; font-size: 0.8rem; margin-bottom: 15px; line-height: 1.4; }
+
+        .btn {
+            background: linear-gradient(45deg, #a29bfe, #00cec9); color: white; border: none;
+            padding: 10px 18px; font-weight: bold; border-radius: 30px; cursor: pointer;
+            transition: 0.3s ease; margin: 5px 2px; font-size: 0.85rem;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(0,206,201,0.3); }
+        .btn.outline { background: transparent; border: 2px solid #00cec9; color: #00cec9; }
+        .btn-danger { background: #ff7675; }
+        .btn-small { background: #00cec9; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+
+        input {
+            width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.4);
+            color: white; box-sizing: border-box; font-size: 0.9rem;
+        }
+        .remember-box { display: flex; align-items: center; justify-content: flex-start; margin: 6px 2px; font-size: 0.8rem; color: #b2bec3; }
+        .remember-box input { margin-right: 6px; width: 15px; height: 15px; }
+        .flex-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+        .coin-bar { font-size: 1.1rem; color: #ffeaa7; font-weight: bold; margin: 8px 0; }
+
+        .list-item {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+            padding: 10px; border-radius: 12px; margin: 6px 0;
+            display: flex; justify-content: space-between; align-items: center; text-align: left; font-size: 0.85rem;
+        }
+        .list-item span { font-size: 0.75rem; color: #b2bec3; display: block; margin-top: 2px; }
+        .option-btn {
+            width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px; padding: 12px; color: white; font-size: 0.85rem; cursor: pointer; margin: 5px 0; text-align: left; line-height: 1.4;
+        }
+        .option-btn:hover { background: rgba(0, 255, 204, 0.12); border-color: #00ffcc; }
+
+        /* 🪐 2D 파스텔 행성 및 보정 */
+        .stage-box { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; margin: 10px 0; position: relative; }
+        .view-canvas { position: relative; width: 230px; height: 230px; margin: 0 auto; display: flex; justify-content: center; align-items: center; overflow: visible; }
+        
+        .sphere {
+            width: 110px; height: 110px; border-radius: 50%; position: relative; overflow: hidden;
+            box-shadow: inset -12px -12px 25px rgba(0,0,0,0.65); transition: 0.4s ease; z-index: 5;
+        }
+
+        /* 🎨 행성 표면 무늬 패턴 */
+        .pattern-crater::before, .pattern-crater::after { content: ''; position: absolute; background: rgba(0,0,0,0.08); border-radius: 50%; box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2); }
+        .pattern-crater::before { width: 22px; height: 16px; top: 20px; left: 15px; }
+        .pattern-crater::after { width: 28px; height: 20px; bottom: 25px; right: 20px; }
+        .pattern-stripe::before { 
+            content: ''; position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+            background: linear-gradient(transparent 30%, rgba(0,0,0,0.07) 30%, rgba(0,0,0,0.07) 45%, transparent 45%, transparent 60%, rgba(255,255,255,0.12) 60%, rgba(255,255,255,0.12) 70%, transparent 70%);
+        }
+        .pattern-nebula::before { 
+            content: ''; position: absolute; width: 150%; height: 150%; top: -25%; left: -25%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(0,0,0,0.2) 0%, transparent 50%);
+            transform: rotate(15deg);
+        }
+        .pattern-aurora::before {
+            content: ''; position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+            background: linear-gradient(135deg, rgba(0, 255, 204, 0.15), rgba(162, 155, 254, 0.2), transparent);
+        }
+        .pattern-none { }
+
+        /* 편안함을 주는 부드러운 파스텔 테마 배색 */
+        .pastel-gray { background: #d2dae2; }
+        .pastel-green { background: #a8e6cf; box-shadow: inset -12px -12px 25px rgba(0,0,0,0.5), 0 0 20px rgba(168,230,207,0.3); } 
+        .pastel-blue { background: #b5deff; box-shadow: inset -12px -12px 25px rgba(0,0,0,0.5), 0 0 20px rgba(181,222,255,0.3); }  
+        .pastel-red { background: #ffbfa3; box-shadow: inset -12px -12px 25px rgba(0,0,0,0.5), 0 0 20px rgba(255,191,163,0.3); }  
+        .pastel-yellow { background: #fff59d; box-shadow: inset -12px -12px 25px rgba(0,0,0,0.5), 0 0 20px rgba(255,245,157,0.3); }
+        .pastel-black { background: #57606f; box-shadow: inset -12px -12px 25px rgba(0,0,0,0.6), 0 0 20px rgba(87,96,111,0.3); }
+
+        /* 🛒 22종 대확장 데코 배치 고정 */
+        .decor { display: none; position: absolute; pointer-events: none; }
+        .dec-ring { width: 185px; height: 42px; border: 4px solid rgba(255, 234, 167, 0.5); border-radius: 50%; transform: rotate(-12deg); z-index: 6; }
+        .dec-moon { width: 16px; height: 16px; background: #f5f6fa; border-radius: 50%; box-shadow: 0 0 6px #fff; z-index: 8; animation: orbit2D 7s linear infinite; }
+
+        /* 지표 배치 오브젝트 안착 정밀 보정 */
+        .dec-alien { font-size: 20px; top: 25px; left: 45px; z-index: 10; }
+        .dec-alien_blue { font-size: 20px; top: 75px; right: 40px; z-index: 10; }
+        .dec-flower_red { font-size: 18px; bottom: 50px; left: 45px; z-index: 10; } 
+        .dec-flower_gold { font-size: 18px; bottom: 50px; right: 45px; z-index: 10; }
+        .dec-crystal { font-size: 18px; top: 50px; left: 40px; z-index: 10; }
+        .dec-tree { font-size: 20px; bottom: 52px; left: 75px; z-index: 10; }
+        .dec-sprout { font-size: 16px; bottom: 50px; right: 75px; z-index: 10; }
+        .dec-star { font-size: 16px; top: 15px; right: 35px; z-index: 10; }
+        .dec-ufo { font-size: 20px; top: -10px; left: 10px; z-index: 10; animation: floatObj 3s ease-in-out infinite; }
+        .dec-satellite { font-size: 18px; bottom: -5px; right: 15px; z-index: 10; }
+        .dec-whale { font-size: 22px; top: 110px; right: 25px; z-index: 10; }
+        .dec-cat { font-size: 18px; top: 40px; right: 65px; z-index: 10; }
+        .dec-rabbit { font-size: 18px; bottom: 50px; left: 65px; z-index: 10; }
+        .dec-cloud { font-size: 20px; top: 45px; left: 55px; z-index: 4; opacity: 0.7; }
+        .dec-rainbow { font-size: 22px; top: 15px; left: 75px; z-index: 4; }
+        .dec-mushroom { font-size: 16px; bottom: 50px; left: 90px; z-index: 10; }
+        .dec-heart { font-size: 16px; top: 70px; right: 80px; z-index: 10; }
+        .dec-clover { font-size: 16px; bottom: 50px; right: 90px; z-index: 10; }
+        .dec-bubble { font-size: 16px; top: 85px; left: 75px; z-index: 10; }
+        .dec-butterfly { font-size: 16px; top: 10px; left: 95px; z-index: 10; }
+        .dec-candy { font-size: 16px; bottom: 75px; left: 35px; z-index: 10; }
+        .dec-ribbon { font-size: 16px; top: 5px; left: 50px; z-index: 10; }
+
+        @keyframes orbit2D {
+            0% { transform: translate(-100px, -45px); z-index: 8; }
+            50% { transform: translate(100px, 45px); z-index: 4; }
+            100% { transform: translate(-100px, -45px); z-index: 8; }
+        }
+        @keyframes floatObj { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+        /* 🌠 실시간 수신용 은하수 폭포 레이어 */
+        .meteor-shower-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; overflow: hidden; border-radius: 20px; }
+        .stream-star {
+            position: absolute; width: 3px; height: 3px; border-radius: 50%; opacity: 0;
+            animation: dropMilkyway 1.2s linear forwards; box-shadow: 0 0 8px #fff;
+        }
+        @keyframes dropMilkyway {
+            0% { transform: translate(0, -20px); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translate(40px, 240px); opacity: 0; }
+        }
+
+        /* 🗑️ 1일차 미니게임 */
+        .game-zone { width: 100%; height: 240px; background: rgba(0, 0, 0, 0.6); border: 2px dashed rgba(0, 255, 204, 0.3); border-radius: 16px; position: relative; margin: 15px 0; overflow: hidden; }
+        .trash { position: absolute; font-size: 24px; cursor: pointer; user-select: none; }
+        .success-banner { display: none; color: #00ffcc; font-size: 1.6rem; font-weight: bold; }
+
+        #top-bar { position: absolute; top: 15px; left: 15px; right: 15px; z-index: 100; display: flex; justify-content: space-between; pointer-events: none; font-size: 0.85rem; }
+        .info-pill { background: rgba(10, 10, 25, 0.7); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 50px; pointer-events: auto; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="stars"></div>
+
+    <div id="top-bar">
+        <div class="info-pill" id="pill-user">🛰️ 연결: 미탑승</div>
+        <div class="info-pill" id="pill-coin" style="color: #ffd700; display:none;">⭐ 별: 0개</div>
+    </div>
+
+    <div class="app-container">
+        
+        <!-- 👥 [사이드바] 접이식 상호수락형 친구 관리소 -->
+        <div id="app-sidebar" class="sidebar">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 class="hide-on-collapse" style="font-size: 1rem; margin:0; color: #00ffcc;">🛰️ 위성 친구 목록</h3>
+                <button class="btn-small" style="padding:4px 8px;" onclick="toggleSidebarSize()">↔️</button>
+            </div>
+            
+            <div class="hide-on-collapse" style="margin-top:10px;">
+                <div style="display: flex; gap: 4px;">
+                    <input type="text" id="side-friend-id" placeholder="친구 ID 추가" style="margin:0; padding:6px; font-size:0.8rem;">
+                    <button class="btn-small" onclick="sendFriendRequest()">신청</button>
+                </div>
+            </div>
+            
+            <div class="friend-list-box" id="friend-list-render"></div>
+        </div>
+
+        <!-- ================= [1] 홈 화면 ================= -->
+        <div id="win-home" class="window active">
+            <h1 class="title-glow" style="margin-top:20px;">나만의 행성 만들기</h1>
+            <p class="subtitle">우주 배경의 은하계 기지입니다. 나만의 빛깔과 무늬를 지닌 행성을 찾고,<br>친구들과 상호 수락 기반 궤도를 연결해 보세요.</p>
+            <div class="card" style="margin-top: 40px;">
+                <button class="btn" onclick="openWindow('win-login')">로그인</button>
+                <button class="btn outline" onclick="openWindow('win-register')">회원가입</button>
+            </div>
+        </div>
+
+        <!-- ================= [2] 회원가입 (ID 중복 차단) ================= -->
+        <div id="win-register" class="window">
+            <h2>✨ 새 은하 계정 생성</h2>
+            <form onsubmit="appRegister(event)">
+                <input type="text" id="reg-id" placeholder="ID (불리는 이름)" required>
+                <input type="password" id="reg-pw" placeholder="PW (알아서 설정)" required>
+                <input type="password" id="reg-pw-confirm" placeholder="PW 다시 입력 창" required>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 20px;">행성 개척선 가동</button>
+            </form>
+            <button class="btn outline" style="margin-top: 10px; width: 100%;" onclick="openWindow('win-home')">돌아가기</button>
+        </div>
+
+        <!-- ================= [3] 로그인 ================= -->
+        <div id="win-login" class="window">
+            <h2>🔐 관제실 데이터 동기화</h2>
+            <form onsubmit="handleLogin(event)">
+                <input type="text" id="login-id" placeholder="ID 입력" required>
+                <input type="password" id="login-pw" placeholder="PW 입력" required>
+                <label class="remember-box">
+                    <input type="checkbox" id="login-remember"> 내 아이디 기억하기
+                </label>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 15px;">로그인</button>
+            </form>
+            <button class="btn outline" style="margin-top: 10px; width: 100%;" onclick="openWindow('win-home')">돌아가기</button>
+        </div>
+
+        <!-- ================= [4] 메인 대시보드 화면 ================= -->
+        <div id="win-dashboard" class="window">
+            <h2 id="dash-title">- 관제사 기지</h2>
+            
+            <div class="stage-box">
+                <div class="view-canvas">
+                    <div id="my-ring" class="decor dec-ring"></div>
+                    <div id="my-moon" class="decor dec-moon"></div>
+                    <!-- 22종 바인딩 레이어 마운트 -->
+                    <div id="my-alien" class="decor my-item dec-alien">👽</div>
+                    <div id="my-alien_blue" class="decor my-item dec-alien_blue">👾</div>
+                    <div id="my-flower_red" class="decor my-item dec-flower_red">🌹</div>
+                    <div id="my-flower_gold" class="decor my-item dec-flower_gold">🌻</div>
+                    <div id="my-crystal" class="decor my-item dec-crystal">💎</div>
+                    <div id="my-tree" class="decor my-item dec-tree">🌳</div>
+                    <div id="my-sprout" class="decor my-item dec-sprout">🌱</div>
+                    <div id="my-star" class="decor my-item dec-star">⭐</div>
+                    <div id="my-ufo" class="decor my-item dec-ufo">🛸</div>
+                    <div id="my-satellite" class="decor my-item dec-satellite">🛰️</div>
+                    <div id="my-whale" class="decor my-item dec-whale">🐋</div>
+                    <div id="my-cat" class="decor my-item dec-cat">🐱</div>
+                    <div id="my-rabbit" class="decor my-item dec-rabbit">🐰</div>
+                    <div id="my-cloud" class="decor my-item dec-cloud">☁️</div>
+                    <div id="my-rainbow" class="decor my-item dec-rainbow">🌈</div>
+                    <div id="my-mushroom" class="decor my-item dec-mushroom">🍄</div>
+                    <div id="my-heart" class="decor my-item dec-heart">💖</div>
+                    <div id="my-clover" class="decor my-item dec-clover">🍀</div>
+                    <div id="my-bubble" class="decor my-item dec-bubble">🫧</div>
+                    <div id="my-butterfly" class="decor my-item dec-butterfly">🦋</div>
+                    <div id="my-candy" class="decor my-item dec-candy">🍬</div>
+                    <div id="my-ribbon" class="decor my-item dec-ribbon">🎀</div>
+                    <div id="my-sphere" class="sphere pastel-gray pattern-crater"></div>
+                </div>
+            </div>
+
+            <div class="coin-bar">⭐ 보유 스타 은하별: <span id="dash-coin">0</span>개</div>
+            
+            <div class="flex-grid">
+                <button class="btn" onclick="openWindow('win-test')">📊 정밀 정서 측정</button>
+                <button class="btn" style="background:linear-gradient(45deg, #fd79a8, #e84393);" onclick="openWindow('win-custom')">🎨 행성 외형 꾸미기</button>
+            </div>
+            
+            <div class="flex-grid">
+                <button class="btn outline" style="border-color:#ffd700; color:#ffd700" onclick="openWindow('win-shop')">🛒 데코 오브젝트 상점</button>
+                <button class="btn outline" style="border-color:#55efc4; color:#55efc4" onclick="openWindow('win-quest')">📜 치유 퀘스트 기지</button>
+            </div>
+
+            <div id="inventory-panel" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:12px; border-radius:15px; margin-top:10px; text-align:left;">
+                <h4 style="margin:0 0 6px 0; font-size:0.85rem; color:#ffeaa7;">🎒 보유 데코 가방 (장착/해제 조작 가능)</h4>
+                <div id="inventory-container" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+            </div>
+
+            <!-- ✉️ 상호 신청 확인 수락 제어 패널 -->
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:12px; border-radius:15px; margin-top:10px; text-align:left;">
+                <h4 style="margin:0 0 6px 0; font-size:0.85rem; color:#00ffcc;">✉️ 나에게 온 위성 친구 신청목록</h4>
+                <div id="requests-container" style="font-size:0.8rem; color:#b2bec3;">받은 신청이 없습니다.</div>
+            </div>
+
+            <button class="btn btn-danger" style="width:100%; margin-top:15px;" onclick="appLogout()">로그아웃</button>
+        </div>
+
+        <!-- ================= [5] 📊 10문항 정밀 정서 측정 진단실 (나가기 긴급탈출 장착 및 완벽 패치) ================= -->
+        <div id="win-test" class="window">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">
+                <h3 id="test-step" style="color:#00cec9; margin:0;">정서 검사 (1/10)</h3>
+                <button class="btn-small" style="background:#ff7675;" onclick="openWindow('win-dashboard')">🏠 나가기</button>
+            </div>
+            <p id="test-q" style="font-weight:bold; font-size:0.95rem; margin:20px 0; min-height:50px; text-align:left; line-height:1.4;"></p>
+            <div id="test-options"></div>
+        </div>
+
+        <!-- ================= [6] 무늬 커스텀 룸 ================= -->
+        <div id="win-custom" class="window">
+            <h2>🎨 행성 무늬 커스터마이징</h2>
+            <div class="list-item"><div><strong>🕳️ 파스텔 크레이터 스킨</strong></div><button class="btn-small" onclick="changePlanetPattern('pattern-crater')">적용</button></div>
+            <div class="list-item"><div><strong>➖ 순환형 대기 가로 줄무늬</strong></div><button class="btn-small" onclick="changePlanetPattern('pattern-stripe')">적용</button></div>
+            <div class="list-item"><div><strong>🌌 입체 오로라 은하 성운</strong></div><button class="btn-small" onclick="changePlanetPattern('pattern-nebula')">적용</button></div>
+            <div class="list-item"><div><strong>✨ 신비한 오로라광 스킨</strong></div><button class="btn-small" onclick="changePlanetPattern('pattern-aurora')">적용</button></div>
+            <div class="list-item"><div><strong>🟡 잡념 차단 순수 무지 스킨</strong></div><button class="btn-small" onclick="changePlanetPattern('pattern-none')">적용</button></div>
+            <button class="btn outline" style="width:100%; margin-top:15px;" onclick="openWindow('win-dashboard')">복귀</button>
+        </div>
+
+        <!-- ================= [7] 치유 퀘스트 목록 ================= -->
+        <div id="win-quest" class="window">
+            <h2>📜 치유 퀘스트 목록 (30일 코스)</h2>
+            <div id="quest-container" style="max-height:45vh; overflow-y:auto;"></div>
+            <button class="btn outline" style="width:100%; margin-top:15px;" onclick="openWindow('win-dashboard')">복귀</button>
+        </div>
+
+        <!-- ================= [8] 1일차 쓰레기 청소 미니게임 ================= -->
+        <div id="win-game1" class="window">
+            <h2>🧹 1일차: 우주쓰레기 수거</h2>
+            <div id="trash-count" style="font-weight:bold; color:#00ffcc; margin-bottom:5px;">남은 파편: 5개</div>
+            <div class="game-zone" id="game-zone"></div>
+            <div class="success-banner" id="success-banner">🎉 수거 대성공! 별 10개 획득!</div>
+            <button class="btn outline" id="btn-game-exit" style="width:100%; margin-top:10px; display:none;" onclick="openWindow('win-dashboard')">기지 복귀</button>
+        </div>
+
+        <!-- ================= [9] 🛒 대확장 22종 상점 ================= -->
+        <div id="win-shop" class="window">
+            <h2>🛒 마음 정화 데코 상점</h2>
+            <div id="shop-container" style="max-height:50vh; overflow-y:auto;"></div>
+            <button class="btn outline" style="width:100%; margin-top:15px;" onclick="openWindow('win-dashboard')">나가기</button>
+        </div>
+
+        <!-- ================= [10] 👥 친구 행성 원격 관측 (실시간 은하수 폭포) ================= -->
+        <div id="win-friend" class="window">
+            <h2 id="friend-title">-의 행성 궤도</h2>
+            <div class="stage-box">
+                <!-- 받은 유저 윈도우 내부에서 쏟아지는 실시간 은하수 샤워 -->
+                <div class="meteor-shower-container" id="milkyway-particle-zone"></div>
+                <div class="view-canvas">
+                    <div id="friend-ring" class="decor dec-ring"></div>
+                    <div id="friend-moon" class="decor dec-moon"></div>
+                    <!-- 친구 오버레이 슬롯 -->
+                    <div id="friend-alien" class="decor friend-item dec-alien">👽</div>
+                    <div id="friend-alien_blue" class="decor friend-item dec-alien_blue">👾</div>
+                    <div id="friend-flower_red" class="decor friend-item dec-flower_red">🌹</div>
+                    <div id="friend-flower_gold" class="decor friend-item dec-flower_gold">🌻</div>
+                    <div id="friend-crystal" class="decor friend-item dec-crystal">💎</div>
+                    <div id="friend-tree" class="decor friend-item dec-tree">🌳</div>
+                    <div id="friend-sprout" class="decor friend-item dec-sprout">🌱</div>
+                    <div id="friend-star" class="decor friend-item dec-star">⭐</div>
+                    <div id="friend-ufo" class="decor friend-item dec-ufo">🛸</div>
+                    <div id="friend-satellite" class="decor friend-item dec-satellite">🛰️</div>
+                    <div id="friend-whale" class="decor friend-item dec-whale">🐋</div>
+                    <div id="friend-cat" class="decor friend-item dec-cat">🐱</div>
+                    <div id="friend-rabbit" class="decor friend-item dec-rabbit">🐰</div>
+                    <div id="friend-cloud" class="decor friend-item dec-cloud">☁️</div>
+                    <div id="friend-rainbow" class="decor friend-item dec-rainbow">🌈</div>
+                    <div id="friend-mushroom" class="decor friend-item dec-mushroom">🍄</div>
+                    <div id="friend-heart" class="decor friend-item dec-heart">💖</div>
+                    <div id="friend-clover" class="decor friend-item dec-clover">🍀</div>
+                    <div id="friend-bubble" class="decor friend-item dec-bubble">🫧</div>
+                    <div id="friend-butterfly" class="decor friend-item dec-butterfly">🦋</div>
+                    <div id="friend-candy" class="decor friend-item dec-candy">🍬</div>
+                    <div id="friend-ribbon" class="decor friend-item dec-ribbon">🎀</div>
+                    <div id="friend-sphere" class="sphere pastel-gray"></div>
+                </div>
+            </div>
+            <button class="btn" style="width:100%; background: linear-gradient(45deg, #ff00cc, #7b2ff7);" onclick="voteFriendAndEffect()">✨ 응원의 은하 빔 발사 (+20별 포상)</button>
+            <button class="btn outline" style="width:100%; margin-top:10px;" onclick="openWindow('win-dashboard')">내 기지로 복귀</button>
+        </div>
+
+    </div>
+
+    <!-- ================= ⚙️ 자바스크립트 엔진 인터페이스 ================= -->
+    <script>
+        // 네트워크 가상 인메모리 DB 세팅
+        if (!localStorage.getItem('NET_GALAXY_SERVER_V7')) {
+            const seed = {
+                'tester1': { pw: '1234', color: 'pastel-green', pattern: 'pattern-stripe', coins: 300, items: ['ring','alien'], equipped: ['ring','alien'], cleared: [], visitor: 12, friends: [], incomingRequests: [], sentRequests: [] },
+                'tester2': { pw: '1234', color: 'pastel-red', pattern: 'pattern-nebula', coins: 150, items: ['moon'], equipped: ['moon'], cleared: [], visitor: 40, friends: [], incomingRequests: [], sentRequests: [] }
+            };
+            localStorage.setItem('NET_GALAXY_SERVER_V7', JSON.stringify(seed));
+        }
+        function getServer() { return JSON.parse(localStorage.getItem('NET_GALAXY_SERVER_V7')); }
+        function saveServer(db) { localStorage.setItem('NET_GALAXY_SERVER_V7', JSON.stringify(db)); }
+
+        let userSession = null;
+        let activeFriendData = null;
+        let isSidebarCollapsed = false;
+
+        // --- 📊 정밀 정서 진단 문항 데이터 (전원 완벽 반영 완료) ---
+        const qaData = [
+            { q: "Q1. 깊은 수면 상태에서 깨어난 순간, 우주선의 인공지능이 \"가장 먼저 떠오르는 단어 하나를 가감 없이 말해달라\"고 요청합니다. 당신의 반응은? (자유연상 척도 적용)", opts: [{t:"① 깊게 고민하지 않고 뇌리를 스친 엉뚱하고 유쾌한 단어를 즉각 외친다.", s:"pastel-yellow"}, {t:"② \"잠깐만, 생각을 좀 정리하고...\"라며 논리적이고 세련된 단어를 고르려 검열한다.", s:"pastel-red"}, {t:"③ 귀찮은 듯 한참을 침묵하다가 그냥 현재 눈앞에 보이는 사물의 이름을 건조하게 뱉는다.", s:"pastel-black"}, {t:"④ 마음을 차분하게 가라앉히는 평화로운 자연이나 풍경에 관한 단어를 속삭인다.", s:"pastel-green"}, {t:"⑤ 내면에 맴돌던 조금은 쓸쓸하고 사색적인 감정의 단어를 조용히 읊조린다.", s:"pastel-blue"}] },
+            { q: "Q2. 항해 중 관제탑 창가에 있는 우주 식물의 '뿌리'가 오염되어 누렇게 뜬 잎사귀들이 발생했습니다. 이를 해결하기 위한 당신의 본능적인 접근 방식은? (뿌리치료 척도 적용)", opts: [{t:"① 당장 보기 싫은 누런 잎사귀들을 가위로 빠르게 잘라내고 눈앞의 공간을 청소한다.", s:"pastel-red"}, {t:"② 식물의 유전자 지도를 분석하고 데이터룸을 뒤져 오염의 근본적인 원인인 토양과 뿌리 세포부터 정밀 치료한다.", s:"pastel-blue"}, {t:"③ \"식물도 스트레스를 받았나 보네\"라며 기지 내부의 환기 및 환경 밸런스를 아늑하게 조정하는 데 주력한다.", s:"pastel-green"}, {t:"④ 다른 식물 화분들까지 전염되었을까 봐 조바심을 내며 온 기지의 생태계를 샅샅이 뒤엎어 검사한다.", s:"pastel-yellow"}, {t:"⑤ 어차피 수명이 다했거나 살리기 힘들다고 생각하여 화분을 시선이 닿지 않는 폐기실로 옮겨둔다.", s:"pastel-black"}] },
+            { q: "Q3. 우주 정거장 대피소에서 낯선 외계 생명체가 당신의 우주복 소매를 다급하게 붙잡고 무언가 알 수 없는 소리를 냅니다. 이때 당신의 즉각적인 대처는? (공감 및 투사 척도 적용)", opts: [{t:"① 상대의 눈빛과 몸짓에 온전히 몰입하며, 그가 처한 절박한 상황과 감정을 본능적으로 이해하려 노력한다.", s:"pastel-blue"}, {t:"② 위험한 생물일지 모른다는 경계심에 조바심을 느끼며 즉시 방어막 스위치를 켜고 거리를 둔다.", s:"pastel-yellow"}, {t:"③ 말이 통하지 않으니 소매를 강하게 뿌리치거나 관제소에 즉각적인 퇴거 조치 보안 무선을 보낸다.", s:"pastel-red"}, {t:"④ 상대의 행동을 위협이 아닌 일상적인 해프닝으로 받아들이고, 따뜻한 음료나 간식을 건네며 안심시킨다.", s:"pastel-green"}, {t:"⑤ 엮이기 싫은 마음에 아무런 반응도 감정도 보이지 않은 채 묵묵히 내 갈 길을 걸어간다.", s:"pastel-black"}] },
+            { q: "Q4. 행성 개척에 필요한 핵심 마이크로 칩을 조립하던 중, 사소한 핀 하나가 부러져 처음부터 다시 작업해야 하는 상황이 되었습니다. 당신의 행동은? (방어기제 및 초자아 충동 척도 적용)", opts: [{t:"① 스스로의 멍청한 실수에 강한 불만이 솟구쳐, 밤을 새워서라도 완벽한 정밀 칩을 새로 깎아낸다.", s:"pastel-red"}, {t:"② 전체 스케줄이 밀려 도태될까 봐 극심한 압박감을 느끼며, 다른 대체 부품이나 퀵 배송 시스템을 조급하게 뒤적인다.", s:"pastel-yellow"}, {t:"③ 조립실의 답답한 밀폐 공기 때문이라 생각하며 잠시 도구를 내려놓고 환기 장치 앞에서 숨을 고른다.", s:"pastel-green"}, {t:"④ 주파수 채널을 켜서 동료들에게 \"오늘 진짜 운이 없다\"며 위로받고 고독함을 채울 소통 상대를 찾는다.", s:"pastel-blue"}, {t:"⑤ 순간적으로 모든 의욕이 꺼져버려 조립대 전원을 차단하고 침대에 누워 멍하니 천장만 바라본다.", s:"pastel-black"}] },
+            { q: "Q5. 오랜 항해로 지친 당신에게 익명의 동료가 우주선 배송으로 '비밀 상자'를 보냈습니다. 상자를 열기 전 당신의 무의식적 기대는? (욕구 및 숨겨진 동기 해석 척도 적용)", opts: [{t:"① 나를 웃게 만들어 줄 신나고 명랑한 파티 용품이나 최신 게임 팩이 들어있기를 기대한다.", s:"pastel-yellow"}, {t:"② 미션을 초고속으로 클리어할 수 있는 강력한 고성능 엔진 부품이나 첨단 무기가 있기를 바란다.", s:"pastel-red"}, {t:"③ 방 안을 아늑하게 채워줄 향기로운 디퓨저나 마음을 편안하게 해주는 인테리어 소품을 기대한다.", s:"pastel-green"}, {t:"④ 밤의 정적 속에서 깊은 감성에 젖어들 수 있는 고전 음악 레코드나 아날로그 서적을 소망한다.", s:"pastel-blue"}, {t:"⑤ 아무런 기대도 품지 않으며, 어차피 별것 아닐 것이라 생각하고 건조하게 포장을 뜯는다.", s:"pastel-black"}] },
+            { q: "Q6. 우주선 메인 컴퓨터가 \"현재 당신의 항해 에너지 밸런스가 무너지고 있다\"며 위험 경고음을 울립니다. 이때 당신이 취하는 조치는? (저항 및 저지 단서 척도 적용)", opts: [{t:"① 도대체 에너지가 어디로 새는 거냐며 시스템 로그를 샅샅이 분석하고 예민하게 해결책을 강구한다.", s:"pastel-red"}, {t:"② 경고 알람이 주는 시끄러운 소음과 압박감이 피곤하여, 알람 주파수 볼륨을 낮추거나 화면을 꺼두고 상황을 방관한다.", s:"pastel-black"}, {t:"③ 궤도 이탈로 우주 미아가 될까 봐 덜컥 두려움이 앞서, 중앙 관제소의 가이드라인을 조급하게 반복 확인한다.", s:"pastel-yellow"}, {t:"④ 기지의 전반적인 산소 수치와 온도 시스템을 가장 스트레스가 적은 최적의 휴식 모드로 강제 전환한다.", s:"pastel-green"}, {t:"⑤ 우주의 거대한 흐름 속에 일어나는 필연적인 과부하라 생각하며, 방의 조명을 낮추고 정적 속에서 사색한다.", s:"pastel-blue"}] },
+            { q: "Q7. 은하계 연합 파티에 참석했는데, 중앙 무대에서 수많은 파일럿들이 원을 그리며 강렬한 비트의 댄스를 추고 있습니다. 당신의 발걸음은? (사회적 저항 및 군중 기피 척도 적용)", opts: [{t:"① \"나랑은 안 맞는 무리\"라는 묘한 소외감과 반발심이 들어, 축제장을 빠르게 빠져나와 나만의 우주선으로 복귀한다.", s:"pastel-red"}, {t:"② 망설임 없이 원의 한가운데로 뛰어들어 경쾌하게 몸을 흔들며 파티의 텐션을 이끌어간다.", s:"pastel-yellow"}, {t:"③ 소음과 번잡함에서 멀어지고 싶어 구석진 바 테이블에 혼자 조용히 앉아 컵을 만지며 사람들을 관측한다.", s:"pastel-blue"}, {t:"④ 흐름을 깨지 않기 위해 은하는 미소를 유지하며 사람들과 가볍게 잔을 부딪치지만, 마음속으로는 빨리 집에 가고 싶어 답답해한다.", s:"pastel-green"}, {t:"⑤ 애초에 그런 시끄러운 모임의 목적지 자체를 패스하고, 정적과 고요함이 유지되는 개인 정비실로 직행한다.", s:"pastel-black"}] },
+            { q: "Q8. 레이더에 사방의 별빛을 집어삼키는 거대한 블랙홀 소용돌이가 포착되었습니다. 화면을 바라보는 당신의 눈빛은? (무의식적 고착 및 공포 투사 척도 적용)", opts: [{t:"① 저 거대한 중력 에너지를 역이용해 우주선 속도를 스릴 넘치게 가속해 보겠다며 레버를 앞으로 민다.", s:"pastel-red"}, {t:"② 블랙홀의 경계면을 고화질 카메라로 줌인하여 우주 통신망에 실시간 생중계를 켜고 사람들의 흥미로운 반응을 즐긴다.", s:"pastel-yellow"}, {t:"③ 내가 쌓아온 평화로운 행성의 궤도까지 송두리째 무너뜨릴 것 같은 막연한 공포심과 답답함에 관측창 셔터를 닫아버린다.", s:"pastel-green"}, {t:"④ 블랙홀의 끝없는 정적과 깊은 어둠이 내 내면의 고독과 닮았다고 느껴, 기지의 불을 모두 끈 채 하염없이 응시한다.", s:"pastel-blue"}, {t:"⑤ 내 머릿속을 짓누르는 복잡한 생각과 지친 감정 찌꺼기들을 저 블랙홀 속으로 다 던져 소멸시키는 상상을 하며 멍하니 서 있는다.", s:"pastel-black"}] },
+            { q: "Q9. 지구의 가족들이 보낸 영상 편지가 도착했습니다. 화면 속 그들이 \"그곳에서의 생활은 정말 행복하니?\"라고 물을 때, 당신의 무의식적 표정은? (외현적 자아 대 무의식적 갈등 척도 적용)", opts: [{t:"① 이곳에서 발견한 신기한 보석과 유물들을 보여주며 내가 얼마나 잘해 나가고 있는지 명랑하게 웃어 보이고 조잘거린다.", s:"pastel-yellow"}, {t:"② 겉으로는 다 괜찮다고 말하지만, 나도 모르게 기지 내부의 밀폐된 벽을 만지며 답답하고 리프레시가 필요하다는 뉘앙스를 풍긴다.", s:"pastel-green"}, {t:"③ 최근 미션 과부하로 날카로워진 상태라 \"바쁘니까 나중에 연락할게\"라며 짧고 퉁명스럽게 영상을 끊어버린다.", s:"pastel-red"}, {t:"④ 상대방의 얼굴을 마주하는 것 자체가 정서적으로 지쳐서, 재생 버튼을 누르지 않고 보관함에 넣어둔 채 나만의 정적 속으로 숨는다.", s:"pastel-black"}, {t:"⑤ 나의 힘든 점은 숨긴 채 그들의 일상만 따뜻하게 확인하고, 영상이 끝난 뒤 수신기 너머의 깊은 그리움과 고독을 삼킨다.", s:"pastel-blue"}] },
+            { q: "Q10. 오늘 하루 모든 미션을 마치고 수면 캡슐에 들어가기 전, 당신의 무의식이 가장 간절하게 원하는 '정서적 정화(카타르시스)' 행동은? (성향별 솔루션 매칭)", opts: [{t:"① 하루 종일 팽팽하게 과열되었던 신경과 초조함을 가라앉히기 위해, 차분한 푸른색 테마의 가상 우주 영상을 틀어둔다.", s:"pastel-red"}, {t:"② 복잡하게 꼬리를 물던 긴장성 생각 회로를 끄기 위해, 뇌를 쉬게 해주는 따뜻한 허브차를 마시며 자극을 차단한다.", s:"pastel-yellow"}, {t:"③ 가슴 밑바닥에 쌓인 고독감과 우울한 침체기를 환하게 끌어올리기 위해, 오렌지빛 조명을 켜고 오늘 즐거웠던 장면을 되새긴다.", s:"pastel-blue"}, {t:"④ 일상적 구속에서 오는 답답함과 스트레스를 뚫어내기 위해, 공기 정화 장치를 강력하게 켜고 시원한 바람을 깊게 호흡한다.", s:"pastel-green"}, {t:"⑤ 정서적 정체기와 무기력함을 말끔히 씻어내기 위해, 책상 위 어지러운 소품들을 하얀색 위주로 칼같이 정리정돈하며 마음을 비운다.", s:"pastel-black"}] }
+        ];
+
+        function syncUIWithCoins() {
+            if (!userSession) return;
+            document.getElementById('pill-coin').innerText = `⭐ 별: ${userSession.coins}개`;
+            const dashCoin = document.getElementById('dash-coin');
+            if(dashCoin) dashCoin.innerText = userSession.coins;
+        }
+
+        function openWindow(winId) {
+            document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
+            document.getElementById(winId).classList.add('active');
+
+            if (userSession) {
+                let db = getServer();
+                userSession = { id: userSession.id, ...db[userSession.id] };
+                syncUIWithCoins();
+                renderPlanetView('my', userSession.color, userSession.pattern, userSession.equipped);
+                updateSidebarFriends();
+                renderRequestsUI();
+            }
+
+            if (winId === 'win-dashboard') {
+                document.getElementById('dash-title').innerText = `${userSession.id} 관제소`;
+                document.getElementById('dash-visitor').innerText = userSession.visitor;
+                renderInventoryUI();
+            }
+            if (winId === 'win-login') {
+                const savedId = localStorage.getItem('GALAXY_REMEMBERED_ID');
+                if (savedId) { document.getElementById('login-id').value = savedId; document.getElementById('login-remember').checked = true; }
+            }
+            if (winId === 'win-shop') { updateShopPage(); }
+            if (winId === 'win-test') { startTest(); }
+            if (winId === 'win-quest') { renderQuestList(); }
+        }
+
+        function toggleSidebarSize() {
+            const sidebar = document.getElementById('app-sidebar');
+            isSidebarCollapsed = !isSidebarCollapsed;
+            if (isSidebarCollapsed) sidebar.classList.add('collapsed');
+            else sidebar.classList.remove('collapsed');
+        }
+
+        function appRegister(e) {
+            e.preventDefault();
+            const id = document.getElementById('reg-id').value.trim();
+            const pw = document.getElementById('reg-pw').value;
+            const confirm = document.getElementById('reg-pw-confirm').value;
+            if(pw !== confirm) return alert('비밀번호가 일치 창과 다릅니다.');
+
+            let db = getServer();
+            if(db[id]) return alert('중복된 ID가 존재합니다. 다른 아이디로 변경해 주세요!');
+
+            db[id] = { pw: pw, color: 'pastel-gray', pattern: 'pattern-crater', coins: 150, items: [], equipped: [], cleared: [], visitor: 0, friends: [], incomingRequests: [], sentRequests: [] };
+            saveServer(db);
+            alert('주민 등록 완료!');
+            openWindow('win-login');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const id = document.getElementById('login-id').value.trim();
+            const pw = document.getElementById('login-pw').value;
+            const rem = document.getElementById('login-remember').checked;
+
+            let db = getServer();
+            if(!db[id] || db[id].pw !== pw) return alert('ID 또는 PW 정보가 유효하지 않습니다.');
+
+            if(rem) localStorage.setItem('GALAXY_REMEMBERED_ID', id);
+            else localStorage.removeItem('GALAXY_REMEMBERED_ID');
+
+            localStorage.setItem('GALAXY_CURRENT_SESSION_USER', id);
+            executeLoginSession(id, db[id]);
+        }
+
+        function executeLoginSession(id, userData) {
+            userSession = { id: id, ...userData };
+            document.getElementById('pill-user').innerText = `🛰️ 관제사: ${userSession.id}`;
+            document.getElementById('pill-coin').style.display = 'block';
+            document.getElementById('app-sidebar').classList.add('active'); 
+            openWindow('win-dashboard');
+        }
+
+        function appLogout() {
+            localStorage.removeItem('GALAXY_CURRENT_SESSION_USER');
+            userSession = null;
+            document.getElementById('pill-user').innerText = `🛰️ 연결: 미탑승`;
+            document.getElementById('pill-coin').style.display = 'none';
+            document.getElementById('app-sidebar').classList.remove('active');
+            openWindow('win-home');
+        }
+
+        function renderPlanetView(prefix, colorKey, patternKey, equippedArray) {
+            const sphere = document.getElementById(`${prefix}-sphere`);
+            if(!sphere) return;
+            sphere.className = `sphere ${colorKey || 'pastel-gray'} ${patternKey || 'pattern-crater'}`;
+
+            document.getElementById(`${prefix}-ring`).style.display = 'none';
+            document.getElementById(`${prefix}-moon`).style.display = 'none';
+            document.querySelectorAll(`.${prefix}-item`).forEach(el => el.style.display = 'none');
+
+            if (equippedArray && Array.isArray(equippedArray)) {
+                equippedArray.forEach(itemId => {
+                    const target = document.getElementById(`${prefix}-${itemId}`);
+                    if (target) target.style.display = 'block';
+                });
+            }
+        }
+
+        function changePlanetPattern(patternClass) {
+            if(!userSession) return;
+            userSession.pattern = patternClass;
+            let db = getServer();
+            db[userSession.id].pattern = patternClass;
+            saveServer(db);
+            renderPlanetView('my', userSession.color, userSession.pattern, userSession.equipped);
+            alert('행성에 새로운 무늬가 적용되었습니다!');
+            openWindow('win-dashboard');
+        }
+
+        function renderInventoryUI() {
+            const block = document.getElementById('inventory-container'); block.innerHTML = '';
+            if(!userSession.items || userSession.items.length === 0) {
+                block.innerHTML = `<span style="color:#636e72; font-size:0.8rem;">가방이 비어 있습니다.</span>`; return;
+            }
+            userSession.items.forEach(itemId => {
+                const prod = shopProducts.find(p => p.id === itemId); if(!prod) return;
+                const itemBadge = document.createElement('div');
+                itemBadge.style.cssText = "background:rgba(255,255,255,0.08); padding:6px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); display:flex; align-items:center; gap:8px; font-size:0.8rem;";
+                const isEquipped = userSession.equipped.includes(itemId);
+                itemBadge.innerHTML = `<span>${prod.icon} ${prod.name}</span><button class="btn-small" style="background:${isEquipped ? '#ff7675':'#2ed573'};" onclick="toggleEquip('${itemId}')">${isEquipped ? '해제':'장착'}</button>`;
+                block.appendChild(itemBadge);
+            });
+        }
+
+        function toggleEquip(itemId) {
+            let db = getServer(); const idx = userSession.equipped.indexOf(itemId);
+            if(idx > -1) userSession.equipped.splice(idx, 1); else userSession.equipped.push(itemId);
+            db[userSession.id].equipped = userSession.equipped; saveServer(db);
+            renderPlanetView('my', userSession.color, userSession.pattern, userSession.equipped); renderInventoryUI();
+        }
+
+        function sendFriendRequest() {
+            const fId = document.getElementById('side-friend-id').value.trim();
+            if(!fId) return alert('친구의 정확한 ID를 입력해 주세요.');
+            if(fId === userSession.id) return alert('자기 자신에게는 신청할 수 없습니다.');
+
+            let db = getServer();
+            if(!db[fId]) return alert('입력하신 ID를 찾을 수 없습니다. 철자를 대조해 보세요.');
+            if(userSession.friends.includes(fId)) return alert('이미 서로 친구 상태입니다.');
+            if(db[fId].incomingRequests.includes(userSession.id)) return alert('이미 친구 신청을 보냈습니다. 상대방의 승인을 기다려주세요.');
+
+            db[fId].incomingRequests.push(userSession.id);
+            db[userSession.id].sentRequests.push(fId);
+            saveServer(db);
+            document.getElementById('side-friend-id').value = '';
+            alert(`${fId}님에게 궤도 주파수 친구 신청을 전송했습니다!`);
+        }
+
+        function renderRequestsUI() {
+            const container = document.getElementById('requests-container'); container.innerHTML = '';
+            if(!userSession.incomingRequests || userSession.incomingRequests.length === 0) {
+                container.innerText = '받은 신청이 없습니다.'; return;
+            }
+            userSession.incomingRequests.forEach(reqId => {
+                const row = document.createElement('div'); row.className = 'list-item';
+                row.innerHTML = `<div><strong>🛰️ ${reqId}</strong></div><button class="btn-small" onclick="acceptFriendRequest('${reqId}')">수락</button>`;
+                container.appendChild(row);
+            });
+        }
+
+        function acceptFriendRequest(reqId) {
+            let db = getServer();
+            db[userSession.id].incomingRequests = db[userSession.id].incomingRequests.filter(id => id !== reqId);
+            db[reqId].sentRequests = db[reqId].sentRequests.filter(id => id !== userSession.id);
+
+            if(!db[userSession.id].friends.includes(reqId)) db[userSession.id].friends.push(reqId);
+            if(!db[reqId].friends.includes(userSession.id)) db[reqId].friends.push(userSession.id);
+
+            saveServer(db); alert(`${reqId}님과 위성 궤도가 상호 연결되었습니다!`); openWindow('win-dashboard');
+        }
+
+        function updateSidebarFriends() {
+            const box = document.getElementById('friend-list-render'); box.innerHTML = '';
+            if(!userSession.friends || userSession.friends.length === 0) {
+                box.innerHTML = `<span style="font-size:0.75rem; color:#636e72;" class="hide-on-collapse">연결된 친구가 없습니다.</span>`; return;
+            }
+            userSession.friends.forEach(fId => {
+                const card = document.createElement('div'); card.className = 'friend-card';
+                card.innerHTML = `<div onclick="warpFriendSpace('${fId}')" style="flex:1;"><strong style="color:#ffeaa7;">🛰️</strong> <span class="hide-on-collapse">${fId}</span></div>`;
+                box.appendChild(card);
+            });
+        }
+
+        function warpFriendSpace(fId) {
+            let db = getServer(); if(!db[fId]) return alert('대상 유저가 존재하지 않습니다.');
+            activeFriendData = { id: fId, ...db[fId] };
+            db[fId].visitor += 1; saveServer(db);
+            document.getElementById('friend-title').innerText = `${activeFriendData.id} 우주민의 행성 궤도`;
+            openWindow('win-friend');
+            renderPlanetView('friend', activeFriendData.color, activeFriendData.pattern, activeFriendData.equipped);
+            document.getElementById('milkyway-particle-zone').innerHTML = '';
+        }
+
+        function voteFriendAndEffect() {
+            userSession.coins += 20; let db = getServer(); db[userSession.id].coins = userSession.coins; saveServer(db); syncUIWithCoins();
+            const particleZone = document.getElementById('milkyway-particle-zone'); particleZone.innerHTML = '';
+            for(let i = 0; i < 25; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div'); star.className = 'stream-star';
+                    star.style.left = `${Math.random() * 85 + 5}%`; star.style.top = `-10px`;
+                    const colors = ['#00ffcc', '#b5deff', '#ffeaa7', '#fd79a8', '#ffffff'];
+                    star.style.background = `linear-gradient(to bottom, ${colors[i % 5]}, rgba(255,255,255,0))`;
+                    particleZone.appendChild(star); setTimeout(() => star.remove(), 1200);
+                }, i * 40);
+            }
+            alert('응원의 은하 빔 전송 완료! 받은 친구의 화면 궤도에 실시간 은하수가 떨어집니다. (+20별 보상)');
+        }
+
+        function startTest() { testIdx = 0; testBucket = {'pastel-green':0, 'pastel-blue':0, 'pastel-red':0, 'pastel-yellow':0, 'pastel-black':0}; renderTest(); }
+        function renderTest() {
+            document.getElementById('test-step').innerText = `정서 검사 중 (${testIdx+1}/10)`;
+            const node = qaData[testIdx]; document.getElementById('test-q').innerText = node.q;
+            const div = document.getElementById('test-options'); div.innerHTML = '';
+            node.opts.forEach(o => {
+                const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o.t;
+                b.onclick = () => { testBucket[o.s]++; if(testIdx < 9) { testIdx++; renderTest(); } else { endTest(); } };
+                div.appendChild(b);
+            });
+        }
+        function endTest() {
+            const finalColor = Object.keys(testBucket).reduce((a, b) => testBucket[a] > testBucket[b] ? a : b);
+            userSession.color = finalColor; let db = getServer(); db[userSession.id].color = finalColor; saveServer(db);
+            alert('정밀 정서 주파수 진단이 완료되어 어울리는 행성 색상이 배정되었습니다.'); openWindow('win-dashboard');
+        }
+
+        const questTasks = [
+            "창문 열고 햇빛 3분 쬐기", "시원한 물 가볍게 한 컵 마시기", "책상 위 물건 3개 정돈하기", "5회 깊게 심호흡하기", "거울 보고 미소 지어보기",
+            "목과 어깨 스트레칭하기", "좋아하는 음악 1곡 감상", "내 감정 상태 종이에 적기", "손 씻으며 물 감각에 집중", "스마트폰 멀리 두고 허리 펴기",
+            "행복했던 기억 회상하기", "따뜻한 음료 음미하기", "제자리걸음 30초 수행", "주변 초록색 물건 3개 찾기", "자신에게 수고했다고 말하기",
+            "먼 풍경 바라보기", "상상 속 상자에 고민 가두기", "귀여운 동물 사진 보기", "내 심장박동 느껴보기", "나에게 쓰는 응원 편지 한 줄",
+            "신체 긴장 툭 풀어주기", "이불 정리하기", "기지개 시원하게 켜기", "행성 화면 보며 멍 때리기", "손끝 가볍게 지압하기",
+            "감사한 일 한 가지 생각", "발가락 힘주었다 빼기", "책 아무 문장 소리내 읽기", "오늘의 작은 규칙 1개 선포", "손바닥 비벼 온기 느끼기"
+        ];
+
+        function renderQuestList() {
+            const container = document.getElementById('quest-container'); container.innerHTML = '';
+            const isDay1Cleared = userSession.cleared.includes(1);
+            const day1 = document.createElement('div'); day1.className = 'list-item';
+            day1.innerHTML = `<div><strong>🎯 1일차 미션: 우주쓰레기 수거</strong><span>🗑️ 날아다니는 파편을 조각 청소하는 미니게임</span></div><button class="btn-small" style="background:${isDay1Cleared ? '#57606f':'#7b2ff7'};" ${isDay1Cleared ? 'disabled':''} onclick="launchTrashGame()">${isDay1Cleared ? '완료됨':'진입하기'}</button>`;
+            container.appendChild(day1);
+
+            for(let i = 2; i <= 30; i++) {
+                const isCleared = userSession.cleared.includes(i);
+                const row = document.createElement('div'); row.className = 'list-item';
+                row.innerHTML = `<div><strong>🎯 ${i}일차 미션: ${questTasks[i-1]}</strong><span>⏱️ 행동 활성화 치유 수칙 (3분 소요)</span></div><button class="btn-small" style="background:${isCleared ? '#57606f':'#00cec9'};" ${isCleared ? 'disabled':''} onclick="completeActionQuest(${i})">${isCleared ? '완료됨':'+50별 수령'}</button>`;
+                container.appendChild(row);
+            }
+        }
+
+        let trashLeft = 5;
+        function launchTrashGame() {
+            if(userSession.cleared.includes(1)) return; openWindow('win-game1'); trashLeft = 5;
+            document.getElementById('trash-count').innerText = `남은 파편: ${trashLeft}개`;
+            document.getElementById('success-banner').style.display = 'none'; document.getElementById('btn-game-exit').style.display = 'none';
+            const zone = document.getElementById('game-zone'); zone.innerHTML = ''; const emojis = ['🛢️', '🥫', '🔩', '📡', '📦'];
+            for(let i = 0; i < 5; i++) {
+                const item = document.createElement('div'); item.className = 'trash'; item.innerText = emojis[i];
+                item.style.left = `${Math.random() * 80 + 5}%`; item.style.top = `${Math.random() * 70 + 10}%`;
+                item.onclick = function() {
+                    this.remove(); trashLeft--; document.getElementById('trash-count').innerText = `남은 파편: ${trashLeft}개`;
+                    if (trashLeft === 0) {
+                        document.getElementById('success-banner').style.display = 'block'; document.getElementById('btn-game-exit').style.display = 'inline-block';
+                        userSession.coins += 10; userSession.cleared.push(1);
+                        let db = getServer(); db[userSession.id].coins = userSession.coins; db[userSession.id].cleared = userSession.cleared; saveServer(db); syncUIWithCoins();
+                    }
+                };
+                zone.appendChild(item);
+            }
+        }
+
+        function completeActionQuest(dayIdx) {
+            if(userSession.cleared.includes(dayIdx)) return;
+            userSession.coins += 50; userSession.cleared.push(dayIdx);
+            let db = getServer(); db[userSession.id].coins = userSession.coins; db[userSession.id].cleared = userSession.cleared; saveServer(db);
+            syncUIWithCoins(); alert(`${dayIdx}일차 미션 완료! ⭐ 50별이 전송되었습니다.`); renderQuestList();
+        }
+
+        const shopProducts = [
+            { id: 'ring', name: '황금 토성 고리막', price: 60, icon: '🪐' }, { id: 'moon', name: '치유 위성 미니달', price: 80, icon: '🌙' },
+            { id: 'alien', name: '초록 행성 외계인', price: 40, icon: '👽' }, { id: 'alien_blue', name: '네온 블루 외계인', price: 50, icon: '👾' },
+            { id: 'flower_red', name: '지표 부착 붉은 화초', price: 30, icon: '🌹' }, { id: 'flower_gold', name: '안착형 해바라기별', price: 45, icon: '🌻' },
+            { id: 'crystal', name: '행성 융합 안심수정', price: 70, icon: '💎' }, { id: 'tree', name: '아늑한 치유 거목', price: 40, icon: '🌳' },
+            { id: 'sprout', name: '자라나는 희망 새싹', price: 20, icon: '🌱' }, { id: 'star', name: '행성 표면 낙하별', price: 25, icon: '⭐' },
+            { id: 'ufo', name: '원형 궤도 미니 UFO', price: 65, icon: '🛸' }, { id: 'satellite', name: '감정 분석 인공위성', price: 55, icon: '🛰️' },
+            { id: 'whale', name: '우주 유형 고래 크루', price: 90, icon: '🐋' }, { id: 'cat', name: '포근한 은하 고양이', price: 50, icon: '🐱' },
+            { id: 'rabbit', name: '치유의 달빛 토끼', price: 50, icon: '🐰' }, { id: 'cloud', name: '잔잔한 마음의 조각구름', price: 30, icon: '☁️' },
+            { id: 'rainbow', name: '희망 충전 우주 무지개', price: 60, icon: '🌈' }, { id: 'mushroom', name: '지표 안착 은하 버섯', price: 25, icon: '🍄' },
+            { id: 'heart', name: '정서 지지 하트 별빛', price: 35, icon: '💖' }, { id: 'clover', name: '행운 증폭 네잎클로버', price: 30, icon: '🍀' },
+            { id: 'bubble', name: '잡념 정화 보글 방울', price: 20, icon: '🫧' }, { id: 'butterfly', name: '생기 충전 우주 나비', price: 35, icon: '🦋' }
+        ];
+
+        function initShopDOM() {
+            const block = document.getElementById('shop-container'); block.innerHTML = '';
+            shopProducts.forEach(p => {
+                const row = document.createElement('div'); row.className = 'list-item';
+                row.innerHTML = `
+                    <div><strong>${p.icon} ${p.name}</strong><span>가방 보관용 라이선스 오브젝트</span></div>
+                    <button class="btn-small" style="background:#6c5ce7" id="sbtn-${p.id}" onclick="buyObject('${p.id}', ${p.price})">⭐ ${p.price}</button>
+                `;
+                block.appendChild(row);
+            });
+        }
+
+        function updateShopPage() {
+            shopProducts.forEach(p => {
+                const btn = document.getElementById(`sbtn-${p.id}`); if (!btn || !userSession) return;
+                if (userSession.items.includes(p.id)) { btn.innerText = "소유함"; btn.style.background = "#2d3436"; btn.disabled = true; }
+                else { btn.innerText = `⭐ ${p.price}`; btn.style.background = "#6c5ce7"; btn.disabled = false; }
+            });
+        }
+
+        function buyObject(itemId, price) {
+            if(userSession.coins < price) return alert('스타 은하별이 부족합니다! 📜 치유 퀘스트를 수행하고 수확해오세요.');
+            userSession.coins -= price; userSession.items.push(itemId);
+            let db = getServer(); db[userSession.id].coins = userSession.coins; db[userSession.id].items = userSession.items; saveServer(db);
+            syncUIWithCoins(); updateShopPage(); alert('아이템 구매 성공! 가방(인벤토리)에서 확인 가능합니다.');
+        }
+
+        window.onload = () => {
+            initShopDOM();
+            const savedUserId = localStorage.getItem('GALAXY_CURRENT_SESSION_USER');
+            if (savedUserId) {
+                let db = getServer();
+                if (db && db[savedUserId]) { executeLoginSession(savedUserId, db[savedUserId]); return; }
+            }
+            openWindow('win-home');
+        };
+    </script>
+</body>
+</html>
